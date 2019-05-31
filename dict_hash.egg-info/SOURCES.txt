@@ -1,0 +1,11 @@
+MANIFEST.in
+README.rst
+setup.py
+dict_hash/__init__.py
+dict_hash/__version__.py
+dict_hash/dict_hash.py
+dict_hash.egg-info/PKG-INFO
+dict_hash.egg-info/SOURCES.txt
+dict_hash.egg-info/dependency_links.txt
+dict_hash.egg-info/requires.txt
+dict_hash.egg-info/top_level.txt
