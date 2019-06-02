@@ -5,3 +5,4 @@ pytest-cov
 coveralls
 validate_version_code
 random_dict
+codacy-coverage
