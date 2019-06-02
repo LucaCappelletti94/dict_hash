@@ -18,7 +18,34 @@ Since some software handling coverages sometime get slightly different results, 
 
 |coveralls| |sonar_coverage| |code_climate_coverage|
 
-AFTER
+Usage examples
+----------------------------------------------
+The package offers two functions: `sha256` to generate constant sha256 hashes and `dict_hash`, to generate hashes using the native `hash` function.
+
+dict_hash
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    from dict_hash import dict_hash
+    from random_dict import random_dict
+    from random import randint
+
+    d = random_dict(randint(1, 10), randint(1, 10))
+    my_hash = dict_hash(d)
+
+
+sha256
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    from dict_hash import sha256
+    from random_dict import random_dict
+    from random import randint
+
+    d = random_dict(randint(1, 10), randint(1, 10))
+    my_hash = sha256(d)
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/dict_hash.png
    :target: https://travis-ci.org/LucaCappelletti94/dict_hash
