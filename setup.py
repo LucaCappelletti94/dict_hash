@@ -1,6 +1,6 @@
 import os
 import re
-import sys
+
 # To use a consistent encoding
 from codecs import open as copen
 from os import path
