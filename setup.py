@@ -55,7 +55,8 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     tests_require=test_deps,
     install_requires=[
-        # Add here the package dependencies
+        "pandas",
+        "numpy"
     ],
     extras_require=extras,
 )
