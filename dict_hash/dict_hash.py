@@ -2,12 +2,18 @@ import hashlib
 from json import dumps
 from typing import Dict
 import collections
+import pandas as pd
+import numpy as np
 
 def _convert(data):
     if isinstance(data, str):
         return str(data)
     elif isinstance(data, collections.Mapping):
         return dict(map(_convert, data.items()))
+    elif isinstance(data, pd.DataFrame):
+        return data.to_json()
+    elif isinstance(data, np.ndarray):
+        return str(data)
     elif isinstance(data, collections.Iterable):
         return type(data)(map(_convert, data))
     else:
