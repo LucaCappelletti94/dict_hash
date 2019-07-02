@@ -67,12 +67,12 @@ sha256
     :target: https://coveralls.io/github/LucaCappelletti94/dict_hash?branch=master
     :alt: Coveralls Coverage
 
-.. |pip| image:: https://badge.fury.io/py/dict_hash.svg
-    :target: https://badge.fury.io/py/dict_hash
+.. |pip| image:: https://badge.fury.io/py/dict-hash.svg
+    :target: https://badge.fury.io/py/dict-hash
     :alt: Pypi project
 
-.. |downloads| image:: https://pepy.tech/badge/dict_hash
-    :target: https://pepy.tech/badge/dict_hash
+.. |downloads| image:: https://pepy.tech/badge/dict-hash
+    :target: https://pepy.tech/badge/dict-hash
     :alt: Pypi total project downloads 
 
 .. |codacy|  image:: https://api.codacy.com/project/badge/Grade/d2954938378a4e4087ebac09b0e50f9e
