@@ -1,10 +1,8 @@
-from random_dict import random_dict
 from dict_hash import sha256, dict_hash
-from random import seed, randint
 from pathlib import Path
+from .utils import create_dict
 
 def test_dict_hash():
-    seed(0)
-    d = random_dict(randint(0,10), randint(0,10))
+    d = create_dict()
     assert dict_hash(d) == dict_hash(d)
     Path(sha256(d)).touch()
