@@ -1,7 +1,6 @@
 import hashlib
 from json import dumps
 from typing import Dict
-import collections
 import pandas as pd
 import numpy as np
 
@@ -15,7 +14,7 @@ def _convert(data):
         return data.to_dict()
     if isinstance(data, np.ndarray):
         return _convert(pd.DataFrame(data))
-    if isinstance(data, collections.Iterable):
+    if isinstance(data, (list, tuple)):
         return type(data)(map(_convert, data))
     raise ValueError("Type {} not currently supported.".format(type(data)))
 
