@@ -6,3 +6,6 @@
 
 .notipy.json
 \.vscode/
+.coverage
+htmlcov
+.pytest_cache

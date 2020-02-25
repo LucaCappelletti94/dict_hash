@@ -5,18 +5,19 @@ import collections
 import pandas as pd
 import numpy as np
 
+
 def _convert(data):
-    if isinstance(data, str):
+    if isinstance(data, (str, int, float)):
         return data
     if isinstance(data, collections.Mapping):
         return dict(map(_convert, data.items()))
     if isinstance(data, pd.DataFrame):
-        return data.to_json()
+        return data.to_dict()
     if isinstance(data, np.ndarray):
-        return pd.DataFrame(data).to_json()
+        return _convert(pd.DataFrame(data))
     if isinstance(data, collections.Iterable):
         return type(data)(map(_convert, data))
-    return data
+    raise ValueError("Type {} not currently supported.".format(type(data)))
 
 def _sanitize(d:Dict)->str:
     return dumps(_convert(d))
