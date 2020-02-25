@@ -9,7 +9,7 @@ import numpy as np
 def _convert(data):
     if isinstance(data, (str, int, float)):
         return data
-    if isinstance(data, collections.Mapping):
+    if isinstance(data, dict):
         return dict(map(_convert, data.items()))
     if isinstance(data, pd.DataFrame):
         return data.to_dict()
