@@ -1,11 +1,8 @@
-\.DS_Store
-
-*/__pycache__/*
-
-**/__pycache__/*
-
+.DS_Store
+__pycache__
 .notipy.json
-\.vscode/
+.vscode
 .coverage
 htmlcov
 .pytest_cache
+*.egg-info
