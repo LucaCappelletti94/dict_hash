@@ -1,6 +1,7 @@
 dict_hash
 =========================================================================================
-|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip| |downloads|
+|travis| |sonar_quality| |sonar_maintainability| |codacy|
+|code_climate_maintainability| |pip| |downloads|
 
 Simple python tool to hash dictionaries using both default hash and sha256.
 
@@ -14,7 +15,7 @@ As usual, just download it using pip:
 
 Tests Coverage
 ----------------------------------------------
-Since some software handling coverages sometime get slightly different results, here's three of them:
+Since some software handling coverages sometimes get slightly different results, here's three of them:
 
 |coveralls| |sonar_coverage| |code_climate_coverage|
 
@@ -75,7 +76,7 @@ sha256
     :target: https://pepy.tech/badge/dict-hash
     :alt: Pypi total project downloads 
 
-.. |codacy|  image:: https://api.codacy.com/project/badge/Grade/d2954938378a4e4087ebac09b0e50f9e
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/d2954938378a4e4087ebac09b0e50f9e
     :target: https://www.codacy.com/app/LucaCappelletti94/dict_hash?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LucaCappelletti94/dict_hash&amp;utm_campaign=Badge_Grade
     :alt: Codacy Maintainability
 
