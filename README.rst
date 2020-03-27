@@ -4,6 +4,7 @@ dict_hash
 |code_climate_maintainability| |pip| |downloads|
 
 Simple python tool to hash dictionaries using both default hash and sha256.
+The library comes with full support for hashing pandas dataframes and numpy arrays.
 
 How do I install this package?
 ----------------------------------------------
