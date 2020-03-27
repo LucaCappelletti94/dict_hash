@@ -18,16 +18,19 @@ def _convert(data):
         return type(data)(map(_convert, data))
     raise ValueError("Type {} not currently supported.".format(type(data)))
 
-def _sanitize(d:Dict)->str:
+
+def _sanitize(d: Dict) -> str:
     return dumps(_convert(d))
 
-def dict_hash(d:Dict)->str:
+
+def dict_hash(d: Dict) -> str:
     """Return hash of given dict (may not be equal for every session).
         d:Dict, dictionary of which determine an unique hash.
     """
     return hash(_sanitize(d))
 
-def sha256(d:Dict)->str:
+
+def sha256(d: Dict) -> str:
     """Return sha256 of given dict.
         d:Dict, dictionary of which determine an unique hash.
     """
