@@ -24,7 +24,7 @@ Usage examples
 ----------------------------------------------
 The package offers two functions: `sha256` to generate constant sha256 hashes and `dict_hash`, to generate hashes using the native `hash` function.
 
-dict_hash
+Session hash with dict_hash
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Obtain a session hash from the given dictionary.
 
@@ -38,7 +38,7 @@ Obtain a session hash from the given dictionary.
     my_hash = dict_hash(d)
 
 
-sha256
+Consistent hash with sha256
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Obtain a consistent hash from the given dictionary.
 
