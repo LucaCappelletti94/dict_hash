@@ -47,7 +47,7 @@ def _sanitize(dictionary: Dict) -> str:
     Raises
     -------------------
     ValueError,
-        When the given object is not a dictionary. 
+        When the given object is not a dictionary.
 
     Returns
     -------------------
