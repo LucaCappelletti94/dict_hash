@@ -26,3 +26,9 @@ def test_hashable():
     assert validate_consistent_hash(b, a)
     assert not validate_consistent_hash(a, c)
     assert not validate_consistent_hash(b, c)
+
+    assert sha256({
+        "my_hashable": a
+    }) == sha256({
+        "my_hashable": b
+    })
