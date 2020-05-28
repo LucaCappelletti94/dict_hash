@@ -15,8 +15,4 @@ def validate_consistent_hash(first: Hashable, second: Hashable) -> bool:
     ----------------------
     Boolean representing if the two objects hash consistently.
     """
-    return all((
-        first.consistent_hash() == first.consistent_hash(),
-        second.consistent_hash() == second.consistent_hash(),
-        first.consistent_hash() == second.consistent_hash()
-    ))
+    return first.consistent_hash() == second.consistent_hash()
