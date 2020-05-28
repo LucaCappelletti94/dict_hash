@@ -1,5 +1,5 @@
 import hashlib
-from json import dumps
+import json
 from typing import Dict
 import pandas as pd
 import numpy as np
@@ -7,6 +7,7 @@ from .hashable import Hashable
 
 
 def _convert(data):
+    """Returns given data as an hashable object or dictionary."""
     # If given object is of type Hashable
     if isinstance(data, Hashable):
         # we call its method to convert it to an hash
@@ -35,19 +36,53 @@ def _convert(data):
     ))
 
 
-def _sanitize(d: Dict) -> str:
-    return dumps(_convert(d))
+def _sanitize(dictionary: Dict) -> str:
+    """Return given dictionary as JSON string.
+
+    Parameters
+    -------------------
+    dictionary: Dict,
+        Dictionary to be converted to JSON.
+
+    Raises
+    -------------------
+    ValueError,
+        When the given object is not a dictionary. 
+
+    Returns
+    -------------------
+    JSON string representation of given dictionary.
+    """
+    if not isinstance(dictionary, Dict):
+        raise ValueError("Given object to hash is not a dictionary.")
+    return json.dumps(_convert(dictionary))
 
 
-def dict_hash(d: Dict) -> str:
+def dict_hash(dictionary: Dict) -> str:
     """Return hash of given dict (may not be equal for every session).
-        d:Dict, dictionary of which determine an unique hash.
+
+    Parameters
+    ------------------
+    dictionary: Dict,
+        Dictionary of which determine an unique hash.
+
+    Returns
+    ------------------
+    Session hash for the given dictionary.
     """
-    return hash(_sanitize(d))
+    return hash(_sanitize(dictionary))
 
 
-def sha256(d: Dict) -> str:
+def sha256(dictionary: Dict) -> str:
     """Return sha256 of given dict.
-        d:Dict, dictionary of which determine an unique hash.
+
+    Parameters
+    ------------------
+    dictionary: Dict,
+        Dictionary of which determine an unique hash.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
     """
-    return hashlib.sha256(_sanitize(d).encode('utf-8')).hexdigest()
+    return hashlib.sha256(_sanitize(dictionary).encode('utf-8')).hexdigest()

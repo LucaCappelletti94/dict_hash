@@ -30,7 +30,14 @@ def find_version(*file_paths):
 
 __version__ = find_version("dict_hash", "__version__.py")
 
-test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'random_dict', 'codacy-coverage']
+test_deps = [
+    'pytest',
+    'pytest-cov',
+    'coveralls',
+    'validate_version_code',
+    'random_dict',
+    'codacy-coverage'
+]
 
 extras = {
     'test': test_deps,
