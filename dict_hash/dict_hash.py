@@ -1,37 +1,88 @@
 import hashlib
-from json import dumps
+import json
 from typing import Dict
 import pandas as pd
 import numpy as np
+from .hashable import Hashable
 
 
 def _convert(data):
+    """Returns given data as an hashable object or dictionary."""
+    # If given object is of type Hashable
+    if isinstance(data, Hashable):
+        # we call its method to convert it to an hash
+        # that can be further hashed as required.
+        return data.consistent_hash()
+    # If the given data is a simple object such as a string, an integer
+    # or a float we can leave it to be hashed.
     if isinstance(data, (str, int, float)):
         return data
+    # If it is a dictionary we need to hash every element of it.
     if isinstance(data, dict):
         return dict(map(_convert, data.items()))
+    # A similar behaviour is required for DataFrames.
     if isinstance(data, pd.DataFrame):
         return data.to_dict()
+    # And numpy arrays.
     if isinstance(data, np.ndarray):
         return _convert(pd.DataFrame(data))
+    # And iterables such as lists and tuples.
     if isinstance(data, (list, tuple)):
         return type(data)(map(_convert, data))
-    raise ValueError("Type {} not currently supported.".format(type(data)))
+
+    # Otherwise we need to raise an exception to warn the user.
+    raise ValueError("Object of class {} not currently supported.".format(
+        data.__class__.__name__
+    ))
 
 
-def _sanitize(d: Dict) -> str:
-    return dumps(_convert(d))
+def _sanitize(dictionary: Dict) -> str:
+    """Return given dictionary as JSON string.
+
+    Parameters
+    -------------------
+    dictionary: Dict,
+        Dictionary to be converted to JSON.
+
+    Raises
+    -------------------
+    ValueError,
+        When the given object is not a dictionary.
+
+    Returns
+    -------------------
+    JSON string representation of given dictionary.
+    """
+    if not isinstance(dictionary, Dict):
+        raise ValueError("Given object to hash is not a dictionary.")
+    return json.dumps(_convert(dictionary))
 
 
-def dict_hash(d: Dict) -> str:
+def dict_hash(dictionary: Dict) -> str:
     """Return hash of given dict (may not be equal for every session).
-        d:Dict, dictionary of which determine an unique hash.
+
+    Parameters
+    ------------------
+    dictionary: Dict,
+        Dictionary of which determine an unique hash.
+
+    Returns
+    ------------------
+    Session hash for the given dictionary.
     """
-    return hash(_sanitize(d))
+    return hash(_sanitize(dictionary))
 
 
-def sha256(d: Dict) -> str:
+def sha256(dictionary: Dict) -> str:
     """Return sha256 of given dict.
-        d:Dict, dictionary of which determine an unique hash.
+
+    Parameters
+    ------------------
+    dictionary: Dict,
+        Dictionary of which determine an unique hash.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
     """
-    return hashlib.sha256(_sanitize(d).encode('utf-8')).hexdigest()
+    return hashlib.sha256(_sanitize(dictionary).encode('utf-8')).hexdigest()
