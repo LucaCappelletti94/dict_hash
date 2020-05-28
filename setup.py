@@ -36,7 +36,8 @@ test_deps = [
     'coveralls',
     'validate_version_code',
     'random_dict',
-    'codacy-coverage'
+    'codacy-coverage',
+    'tqdm'
 ]
 
 extras = {
