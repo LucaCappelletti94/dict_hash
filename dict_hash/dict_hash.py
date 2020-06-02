@@ -3,6 +3,7 @@ import json
 from typing import Dict
 import pandas as pd
 import numpy as np
+from numba import typed
 from .hashable import Hashable
 from deflate_dict import deflate
 
@@ -25,7 +26,7 @@ def _convert(data):
     if isinstance(data, (str, int, float)):
         return data
     # If it is a dictionary we need to hash every element of it.
-    if isinstance(data, dict):
+    if isinstance(data, (dict, typed.Dict)):
         return dict(map(_convert, list(data.items())))
     # A similar behaviour is required for DataFrames.
     if isinstance(data, pd.DataFrame):
@@ -34,8 +35,10 @@ def _convert(data):
     if isinstance(data, np.ndarray):
         return _convert(pd.DataFrame(data))
     # And iterables such as lists and tuples.
-    if isinstance(data, (list, tuple)):
-        return type(data)(map(_convert, data))
+    if isinstance(data, (list, typed.List)):
+        return list(map(_convert, data))
+    if isinstance(data, tuple):
+        return tuple(map(_convert, data))
 
     # Otherwise we need to raise an exception to warn the user.
     raise ValueError("Object of class {} not currently supported.".format(
