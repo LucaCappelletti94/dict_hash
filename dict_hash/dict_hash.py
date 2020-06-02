@@ -4,6 +4,7 @@ from typing import Dict
 import pandas as pd
 import numpy as np
 from .hashable import Hashable
+from deflate_dict import deflate
 
 
 def _convert(data):
@@ -13,6 +14,10 @@ def _convert(data):
         # we call its method to convert it to an hash
         # that can be further hashed as required.
         return data.consistent_hash()
+    # If we are handling an instance of fixed-length numpy strings we need to
+    # convert them back to a normal python string so that they may be hashed.
+    if isinstance(data, bytes):
+        return data.decode()
     # If the given data is a simple object such as a string, an integer
     # or a float we can leave it to be hashed.
     if isinstance(data, (str, int, float)):
@@ -22,7 +27,7 @@ def _convert(data):
         return dict(map(_convert, data.items()))
     # A similar behaviour is required for DataFrames.
     if isinstance(data, pd.DataFrame):
-        return data.to_dict()
+        return _convert(data.to_dict())
     # And numpy arrays.
     if isinstance(data, np.ndarray):
         return _convert(pd.DataFrame(data))
@@ -55,7 +60,7 @@ def _sanitize(dictionary: Dict) -> str:
     """
     if not isinstance(dictionary, Dict):
         raise ValueError("Given object to hash is not a dictionary.")
-    return json.dumps(_convert(dictionary))
+    return json.dumps(deflate(_convert(dictionary)))
 
 
 def dict_hash(dictionary: Dict) -> str:

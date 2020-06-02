@@ -10,5 +10,15 @@ def create_dict(seed=0):
     d["pandas"] = pd.DataFrame({
         "a": [1, 2, 3]
     })
+    d["numpy_fixed_string"] = np.array([
+        "pippo",
+        "pluto",
+        "kebab"
+    ], dtype=np.string_)
+    d["numpy_fixed_string2"] = np.array([
+        "pippo",
+        "pluto",
+        "kebab"
+    ], dtype=np.str_)
     d["numpy"] = np.array([1, 2, 3])
     return d
