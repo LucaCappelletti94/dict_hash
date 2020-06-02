@@ -18,13 +18,15 @@ def _convert(data):
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
         return data.decode()
+    if isinstance(data, (np.str_, np.string_)):
+        return str(data)
     # If the given data is a simple object such as a string, an integer
     # or a float we can leave it to be hashed.
     if isinstance(data, (str, int, float)):
         return data
     # If it is a dictionary we need to hash every element of it.
     if isinstance(data, dict):
-        return dict(map(_convert, data.items()))
+        return dict(map(_convert, list(data.items())))
     # A similar behaviour is required for DataFrames.
     if isinstance(data, pd.DataFrame):
         return _convert(data.to_dict())
