@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dict-hash
-Version: 1.1.0
+Version: 1.1.1
 Summary: Simple python tool to hash dictionaries using both default hash and sha256.
 Home-page: https://github.com/LucaCappelletti94/dict_hash
 Author: Luca Cappelletti
@@ -32,7 +32,7 @@ Description: dict_hash
         ----------------------------------------------
         The package offers two functions: `sha256` to generate constant sha256 hashes and `dict_hash`, to generate hashes using the native `hash` function.
         
-        dict_hash
+        Session hash with dict_hash
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Obtain a session hash from the given dictionary.
         
@@ -46,7 +46,7 @@ Description: dict_hash
             my_hash = dict_hash(d)
         
         
-        sha256
+        Consistent hash with sha256
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Obtain a consistent hash from the given dictionary.
         

@@ -1,5 +1,6 @@
 pandas
 numpy
+deflate_dict
 
 [test]
 pytest
