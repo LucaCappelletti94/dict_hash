@@ -64,7 +64,8 @@ setup(
     tests_require=test_deps,
     install_requires=[
         "pandas",
-        "numpy"
+        "numpy",
+        "deflate_dict"
     ],
     extras_require=extras,
 )
