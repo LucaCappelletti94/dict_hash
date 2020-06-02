@@ -65,7 +65,8 @@ setup(
     install_requires=[
         "pandas",
         "numpy",
-        "deflate_dict"
+        "deflate_dict",
+        "numba"
     ],
     extras_require=extras,
 )
