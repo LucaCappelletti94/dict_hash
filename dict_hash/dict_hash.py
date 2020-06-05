@@ -10,6 +10,9 @@ from deflate_dict import deflate
 
 def _convert(data):
     """Returns given data as an hashable object or dictionary."""
+    # If the object is a None.
+    if data is None:
+        return "None"
     # If given object is of type Hashable
     if isinstance(data, Hashable):
         # we call its method to convert it to an hash

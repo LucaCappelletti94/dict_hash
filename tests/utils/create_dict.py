@@ -10,4 +10,5 @@ def create_dict(seed=0):
     d[tuple((np.str_("ciao"), np.str_("ciao")))] = 9
     d["numba_list"] = typed.List()
     d["numba_dict"] = typed.Dict()
+    d["none"] = None
     return d
