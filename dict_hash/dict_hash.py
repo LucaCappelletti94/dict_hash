@@ -1,6 +1,6 @@
 import hashlib
 import json
-from typing import Dict
+from typing import Dict, List
 import pandas as pd
 import numpy as np
 from numba import typed
@@ -66,8 +66,13 @@ def _sanitize(dictionary: Dict) -> str:
     -------------------
     JSON string representation of given dictionary.
     """
-    if not isinstance(dictionary, Dict):
-        raise ValueError("Given object to hash is not a dictionary.")
+    if not isinstance(dictionary, (Dict, List)):
+        raise ValueError((
+            "Given object to hash is not a dictionary nor a List, "
+            "but a {} object, which is not currently supported."
+        ).format(
+            dictionary.__class__.__name__
+        ))
     return json.dumps(deflate(_convert(dictionary)))
 
 
