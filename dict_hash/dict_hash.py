@@ -73,7 +73,7 @@ def _sanitize(dictionary: Dict) -> str:
         ).format(
             dictionary.__class__.__name__
         ))
-    return json.dumps(deflate(_convert(dictionary)))
+    return json.dumps(deflate(_convert(dictionary), leave_tuples=True))
 
 
 def dict_hash(dictionary: Dict) -> str:
