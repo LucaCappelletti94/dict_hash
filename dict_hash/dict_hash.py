@@ -1,6 +1,7 @@
 import hashlib
+import inspect
 import json
-from typing import Dict, List
+from typing import Dict, List, Callable
 import pandas as pd
 import numpy as np
 from numba import typed
@@ -8,7 +9,7 @@ from .hashable import Hashable
 from deflate_dict import deflate
 
 
-def _convert(data):
+def _convert(data: object):
     """Returns given data as an hashable object or dictionary."""
     # If the object is a None.
     if data is None:
@@ -42,6 +43,10 @@ def _convert(data):
         return list(map(_convert, data))
     if isinstance(data, tuple):
         return tuple(map(_convert, data))
+    if isinstance(data, Callable):
+        return "".join(
+            inspect.getsourcelines(data)[0]
+        )
 
     # Otherwise we need to raise an exception to warn the user.
     raise ValueError("Object of class {} not currently supported.".format(

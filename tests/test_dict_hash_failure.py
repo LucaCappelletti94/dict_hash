@@ -4,11 +4,6 @@ import pytest
 
 def test_dict_hash_failure():
     with pytest.raises(ValueError):
-        dict_hash({
-            "Test": lambda x: 0
-        })
-
-    with pytest.raises(ValueError):
         dict_hash(0)
 
     with pytest.raises(ValueError):
