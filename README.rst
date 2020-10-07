@@ -4,7 +4,9 @@ dict_hash
 |code_climate_maintainability| |pip| |downloads|
 
 Simple python tool to hash dictionaries using both default hash and sha256.
-The library comes with full support for hashing pandas dataframes and numpy arrays.
+The library comes with full support for hashing Pandas DataFrame objects,
+Numba objects and Numpy arrays, but you will need to specify the requirements
+when installing the package to avoid bloating the installation process.
 
 How do I install this package?
 ----------------------------------------------
@@ -12,7 +14,11 @@ As usual, just download it using pip:
 
 .. code:: shell
 
-    pip install dict_hash
+    pip install dict_hash[all] # To install everything
+    pip install dict_hash[numba] # To install with numba support
+    pip install dict_hash[numpy] # To install with numpy support
+    pip install dict_hash[pandas] # To install with pandas support
+
 
 Tests Coverage
 ----------------------------------------------

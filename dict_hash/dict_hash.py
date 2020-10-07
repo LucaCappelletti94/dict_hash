@@ -2,9 +2,6 @@ import hashlib
 import inspect
 import json
 from typing import Dict, List, Callable
-import pandas as pd
-import numpy as np
-from numba import typed
 from .hashable import Hashable
 from deflate_dict import deflate
 
@@ -23,24 +20,36 @@ def _convert(data: object):
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
         return data.decode()
-    if isinstance(data, (np.str_, np.string_)):
-        return str(data)
+    try:
+        import numpy as np
+        if isinstance(data, (np.str_, np.string_)):
+            return str(data)
+    except ModuleNotFoundError:
+        pass
     # If the given data is a simple object such as a string, an integer
     # or a float we can leave it to be hashed.
     if isinstance(data, (str, int, float)):
         return data
-    # If it is a dictionary we need to hash every element of it.
-    if isinstance(data, (dict, typed.Dict)):
-        return dict(map(_convert, list(data.items())))
-    # A similar behaviour is required for DataFrames.
-    if isinstance(data, pd.DataFrame):
-        return _convert(data.to_dict())
-    # And numpy arrays.
-    if isinstance(data, np.ndarray):
-        return _convert(pd.DataFrame(data))
-    # And iterables such as lists and tuples.
-    if isinstance(data, (list, typed.List)):
-        return list(map(_convert, data))
+    try:
+        import pandas as pd
+        # A similar behaviour is required for DataFrames.
+        if isinstance(data, pd.DataFrame):
+            return _convert(data.to_dict())
+        # And numpy arrays.
+        if isinstance(data, np.ndarray):
+            return _convert(pd.DataFrame(data))
+    except ModuleNotFoundError:
+        pass
+    try:
+        from numba import typed
+        # And iterables such as lists and tuples.
+        if isinstance(data, (list, typed.List)):
+            return list(map(_convert, data))
+        # If it is a dictionary we need to hash every element of it.
+        if isinstance(data, (dict, typed.Dict)):
+            return dict(map(_convert, list(data.items())))
+    except ModuleNotFoundError:
+        pass
     if isinstance(data, tuple):
         return tuple(map(_convert, data))
     if isinstance(data, Callable):

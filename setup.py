@@ -42,6 +42,10 @@ test_deps = [
 
 extras = {
     'test': test_deps,
+    "numpy": "numpy",
+    "pandas": "pandas",
+    "numba": "numba",
+    "all": ["numpy", "pandas", "numba"]
 }
 
 setup(
@@ -63,10 +67,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     tests_require=test_deps,
     install_requires=[
-        "pandas",
-        "numpy",
         "deflate_dict>=1.0.8",
-        "numba>=0.50.0"
     ],
     extras_require=extras,
 )
