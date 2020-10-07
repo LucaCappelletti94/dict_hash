@@ -1,7 +1,18 @@
-pandas
-numpy
 deflate_dict>=1.0.8
-numba>=0.50.0
+
+[all]
+numpy
+pandas
+numba
+
+[numba]
+numba
+
+[numpy]
+numpy
+
+[pandas]
+pandas
 
 [test]
 pytest
