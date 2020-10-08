@@ -5,7 +5,6 @@ from typing import Dict, List, Callable
 from .hashable import Hashable
 from deflate_dict import deflate
 
-
 def _convert(data: object):
     """Returns given data as an hashable object or dictionary."""
     # If the object is a None.
@@ -20,36 +19,74 @@ def _convert(data: object):
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
         return data.decode()
+
+    ############################################
+    # Handling hashing of numpy string objects #
+    ############################################
+
     try:
         import numpy as np
-        if isinstance(data, (np.str_, np.string_)):
-            return str(data)
     except ModuleNotFoundError:
         pass
+    else:
+        if isinstance(data, (np.str_, np.string_)):
+            return str(data)
+
     # If the given data is a simple object such as a string, an integer
     # or a float we can leave it to be hashed.
     if isinstance(data, (str, int, float)):
         return data
+
+    ############################################
+    # Handling hashing of pandas objects       #
+    ############################################
+
     try:
         import pandas as pd
+    except ModuleNotFoundError:
+        pass
+    else:
         # A similar behaviour is required for DataFrames.
         if isinstance(data, pd.DataFrame):
             return _convert(data.to_dict())
+
+    ############################################
+    # Handling hashing of numpy array objects  #
+    ############################################
+
+    try:
+        import pandas as pd
+        import numpy as np
+    except ModuleNotFoundError:
+        pass
+    else:
         # And numpy arrays.
         if isinstance(data, np.ndarray):
             return _convert(pd.DataFrame(data))
-    except ModuleNotFoundError:
-        pass
+
+    ############################################
+    # Handling hashing of numba array objects  #
+    ############################################
+
     try:
         from numba import typed
+    except ModuleNotFoundError:
+        pass
+    else:
         # And iterables such as lists and tuples.
         if isinstance(data, (list, typed.List)):
             return list(map(_convert, data))
         # If it is a dictionary we need to hash every element of it.
         if isinstance(data, (dict, typed.Dict)):
             return dict(map(_convert, list(data.items())))
-    except ModuleNotFoundError:
-        pass
+
+    # And iterables such as lists and tuples.
+    if isinstance(data, list):
+        return list(map(_convert, data))
+    # If it is a dictionary we need to hash every element of it.
+    if isinstance(data, dict):
+        return dict(map(_convert, list(data.items())))
+
     if isinstance(data, tuple):
         return tuple(map(_convert, data))
     if isinstance(data, Callable):
