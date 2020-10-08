@@ -74,10 +74,10 @@ def _convert(data: object):
         pass
     else:
         # And iterables such as lists and tuples.
-        if isinstance(data, (list, typed.List)):
+        if isinstance(data, typed.List):
             return list(map(_convert, data))
         # If it is a dictionary we need to hash every element of it.
-        if isinstance(data, (dict, typed.Dict)):
+        if isinstance(data, typed.Dict):
             return dict(map(_convert, list(data.items())))
 
     # And iterables such as lists and tuples.
