@@ -5,6 +5,7 @@ from typing import Dict, List, Callable
 from .hashable import Hashable
 from deflate_dict import deflate
 
+
 def _convert(data: object):
     """Returns given data as an hashable object or dictionary."""
     # If the object is a None.
@@ -124,7 +125,7 @@ def _sanitize(dictionary: Dict) -> str:
         ).format(
             dictionary.__class__.__name__
         ))
-    return json.dumps(deflate(_convert(dictionary), leave_tuples=True))
+    return json.dumps(deflate(_convert(dictionary), leave_tuples=True), sort_keys=True)
 
 
 def dict_hash(dictionary: Dict) -> str:
