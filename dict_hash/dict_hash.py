@@ -52,6 +52,18 @@ def _convert(data: object):
             return _convert(data.to_dict())
 
     ############################################
+    # Handling hashing of Ensmallen objects    #
+    ############################################
+
+    try:
+        from ensmallen_graph import EnsmallenGraph
+    except ModuleNotFoundError:
+        pass
+    else:
+        if isinstance(data, EnsmallenGraph):
+            return data.hash()
+
+    ############################################
     # Handling hashing of numpy array objects  #
     ############################################
 
