@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dict-hash
-Version: 1.1.16
+Version: 1.1.17
 Summary: Simple python tool to hash dictionaries using both default hash and sha256.
 Home-page: https://github.com/LucaCappelletti94/dict_hash
 Author: Luca Cappelletti
@@ -134,7 +134,7 @@ Classifier: Development Status :: 3 - Alpha
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
 Provides-Extra: test
+Provides-Extra: numba
 Provides-Extra: numpy
 Provides-Extra: pandas
-Provides-Extra: numba
 Provides-Extra: all

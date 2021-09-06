@@ -56,6 +56,18 @@ def _convert(data: object):
     ############################################
 
     try:
+        from ensmallen import Graph
+    except ModuleNotFoundError:
+        pass
+    else:
+        if isinstance(data, Graph):
+            return data.hash()
+
+    #############################################################
+    # Handling hashing of older version of Ensmallen objects    #
+    #############################################################
+
+    try:
         from ensmallen_graph import EnsmallenGraph
     except ModuleNotFoundError:
         pass
