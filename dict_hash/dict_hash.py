@@ -2,9 +2,11 @@ import datetime
 import hashlib
 import inspect
 import json
-from typing import Dict, List, Callable
-from .hashable import Hashable
+from typing import Callable, Dict, List
+
 from deflate_dict import deflate
+
+from .hashable import Hashable
 
 
 def _convert(data: object):
@@ -21,8 +23,10 @@ def _convert(data: object):
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
         return data.decode()
-    # If given object is a datetime object
-    if isinstance(data, datetime.date):
+    # If given object is either a date or datetime object
+    if isinstance(data, (datetime.date, datetime.datetime)):
+        # we convert the object to the string version
+        # following the ISO format of the date.
         return data.isoformat()
 
     ############################################
@@ -84,8 +88,8 @@ def _convert(data: object):
     ############################################
 
     try:
-        import pandas as pd
         import numpy as np
+        import pandas as pd
     except ModuleNotFoundError:
         pass
     else:
