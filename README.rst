@@ -1,7 +1,7 @@
 dict_hash
 =========================================================================================
 |travis| |sonar_quality| |sonar_maintainability| |codacy|
-|code_climate_maintainability| |pip| |downloads|
+|code_climate_maintainability| |pip| |downloads| |sponsor|
 
 Simple python tool to hash dictionaries using both default hash and sha256.
 The library comes with full support for hashing Pandas DataFrame objects,
@@ -108,6 +108,10 @@ Here is an example:
 .. |downloads| image:: https://pepy.tech/badge/dict-hash
     :target: https://pepy.tech/badge/dict-hash
     :alt: Pypi total project downloads 
+
+.. |sponsor| image:: https://github.com/sponsors/LucaCappelletti94
+    :target: https://github.com/sponsors/LucaCappelletti94
+    :alt: Sponsor this project
 
 .. |codacy| image:: https://api.codacy.com/project/badge/Grade/d2954938378a4e4087ebac09b0e50f9e
     :target: https://www.codacy.com/app/LucaCappelletti94/dict_hash?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LucaCappelletti94/dict_hash&amp;utm_campaign=Badge_Grade
