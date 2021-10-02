@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import inspect
 import json
@@ -20,6 +21,9 @@ def _convert(data: object):
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
         return data.decode()
+    # If given object is a datetime object
+    if isinstance(data, datetime.date):
+        return data.isoformat()
 
     ############################################
     # Handling hashing of numpy string objects #
