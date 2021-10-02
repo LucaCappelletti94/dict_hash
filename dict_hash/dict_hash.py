@@ -23,8 +23,8 @@ def _convert(data: object):
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
         return data.decode()
-    # If given object is either a date or datetime object
-    if isinstance(data, (datetime.date, datetime.datetime)):
+    # If given object is a date object
+    if isinstance(data, datetime.date):
         # we convert the object to the string version
         # following the ISO format of the date.
         return data.isoformat()
