@@ -1,8 +1,10 @@
-import pandas as pd
-import numpy as np
 import random
-from random_dict import random_dict
+from datetime import date
+
+import numpy as np
+import pandas as pd
 from numba import typed
+from random_dict import random_dict
 
 
 def create_dict(seed=0):
@@ -12,5 +14,6 @@ def create_dict(seed=0):
     d["numba_list"] = typed.List()
     d["numba_dict"] = typed.Dict()
     d["callable"] = create_dict
+    d["date"] = date(1994, 12, 12)
     d["none"] = None
     return d
