@@ -103,7 +103,7 @@ def _convert(data: object):
 
     try:
         from numba import typed
-    except ModuleNotFoundError:
+    except (ModuleNotFoundError, ImportError):
         pass
     else:
         # And iterables such as lists and tuples.
