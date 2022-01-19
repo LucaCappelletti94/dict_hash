@@ -8,6 +8,9 @@ The library comes with full support for hashing Pandas DataFrame objects,
 Numba objects and Numpy arrays, but you will need to specify the requirements
 when installing the package to avoid bloating the installation process.
 
+As we saw this library being used in the wild mostly to create caching libraries and wrappers,
+we'd like to point you to our library, `Cache decorator <https://github.com/zommiommy/cache_decorator>`__.
+
 How do I install this package?
 ----------------------------------------------
 As usual, just download it using pip:
