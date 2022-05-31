@@ -15,5 +15,6 @@ def create_dict(seed=0):
     d["numba_dict"] = typed.Dict()
     d["callable"] = create_dict
     d["date"] = date(1994, 12, 12)
+    d["set"] = {1, 2, 4}
     d["none"] = None
     return d

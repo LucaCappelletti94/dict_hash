@@ -152,6 +152,9 @@ def _convert(
     if isinstance(data, tuple):
         return tuple(map(_convert, data))
 
+    if isinstance(data, set):
+        return sorted(map(_convert, data))
+
     if isinstance(data, Callable):
         return "".join(
             inspect.getsourcelines(data)[0]
