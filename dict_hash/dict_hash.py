@@ -9,8 +9,29 @@ from deflate_dict import deflate
 from .hashable import Hashable
 
 
-def _convert(data: object):
-    """Returns given data as an hashable object or dictionary."""
+def _convert(
+    data: object,
+    use_approximation: bool = False
+) -> object:
+    """Returns given data as an hashable object or dictionary.
+
+    Parameters
+    ------------------
+    data: object
+        The data 
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+
+    Raises
+    ------------------
+    NotImplementedError
+        When we have no clue what to do with the provided object yet.
+    """
     # If the object is a None.
     if data is None:
         return "None"
@@ -57,7 +78,23 @@ def _convert(data: object):
     else:
         # A similar behaviour is required for DataFrames.
         if isinstance(data, pd.DataFrame):
-            return _convert(data.to_dict())
+            if use_approximation:
+                # We take at most the first 100 columns.
+                # This is needed because we have encountered DataFrames
+                # with millions of columns. Peace to the soul that made them.
+                if data.shape[1] > 100:
+                    data = data[data.columns[:100]]
+                # We sample 100 random lines of the dataframe, as some dataframes
+                # can contain millions of samples.
+                if data.shape[0] > 100:
+                    data = data.sample(
+                        n=min(data.shape[0], 100),
+                        random_state=42
+                    )
+            return _convert(
+                data.to_dict(),
+                use_approximation=use_approximation
+            )
 
     ############################################
     # Handling hashing of Ensmallen objects    #
@@ -69,18 +106,6 @@ def _convert(data: object):
         pass
     else:
         if isinstance(data, Graph):
-            return data.hash()
-
-    #############################################################
-    # Handling hashing of older version of Ensmallen objects    #
-    #############################################################
-
-    try:
-        from ensmallen_graph import EnsmallenGraph
-    except ModuleNotFoundError:
-        pass
-    else:
-        if isinstance(data, EnsmallenGraph):
             return data.hash()
 
     ############################################
@@ -95,7 +120,10 @@ def _convert(data: object):
     else:
         # And numpy arrays.
         if isinstance(data, np.ndarray):
-            return _convert(pd.DataFrame(data))
+            return _convert(
+                pd.DataFrame(data),
+                use_approximation=use_approximation
+            )
 
     ############################################
     # Handling hashing of numba array objects  #
@@ -116,34 +144,51 @@ def _convert(data: object):
     # And iterables such as lists and tuples.
     if isinstance(data, list):
         return list(map(_convert, data))
+
     # If it is a dictionary we need to hash every element of it.
     if isinstance(data, dict):
         return dict(map(_convert, list(data.items())))
 
     if isinstance(data, tuple):
         return tuple(map(_convert, data))
+
     if isinstance(data, Callable):
         return "".join(
             inspect.getsourcelines(data)[0]
         )
 
     # Otherwise we need to raise an exception to warn the user.
-    raise ValueError("Object of class {} not currently supported.".format(
-        data.__class__.__name__
-    ))
+    raise NotImplementedError(
+        (
+            "Object of class {} not currently supported. "
+            "Please do consider opening up an issue and related "
+            "pull requested on the `dict_hash` GitHub repository "
+            "to add support for this new type of object."
+        ).format(data.__class__.__name__)
+    )
 
 
-def _sanitize(dictionary: Dict) -> str:
+def _sanitize(
+    dictionary: Dict,
+    use_approximation: bool = False
+) -> str:
     """Return given dictionary as JSON string.
 
     Parameters
     -------------------
-    dictionary: Dict,
+    dictionary: Dict
         Dictionary to be converted to JSON.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
 
     Raises
     -------------------
-    ValueError,
+    ValueError
         When the given object is not a dictionary.
 
     Returns
@@ -157,34 +202,65 @@ def _sanitize(dictionary: Dict) -> str:
         ).format(
             dictionary.__class__.__name__
         ))
-    return json.dumps(deflate(_convert(dictionary), leave_tuples=True), sort_keys=True)
+    return json.dumps(deflate(_convert(
+        dictionary,
+        use_approximation=use_approximation
+    ), leave_tuples=True), sort_keys=True)
 
 
-def dict_hash(dictionary: Dict) -> str:
+def dict_hash(
+    dictionary: Dict,
+    use_approximation: bool = False
+) -> str:
     """Return hash of given dict (may not be equal for every session).
 
     Parameters
     ------------------
-    dictionary: Dict,
+    dictionary: Dict
         Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
 
     Returns
     ------------------
     Session hash for the given dictionary.
     """
-    return hash(_sanitize(dictionary))
+    return hash(_sanitize(
+        dictionary,
+        use_approximation=use_approximation
+    ))
 
 
-def sha256(dictionary: Dict) -> str:
+def sha256(
+    dictionary: Dict,
+    use_approximation: bool = False
+) -> str:
     """Return sha256 of given dict.
 
     Parameters
     ------------------
-    dictionary: Dict,
+    dictionary: Dict
         Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
 
     Returns
     ------------------
     Deterministic hash for the given dictionary.
     """
-    return hashlib.sha256(_sanitize(dictionary).encode('utf-8')).hexdigest()
+    return hashlib.sha256(
+        _sanitize(
+            dictionary,
+            use_approximation=use_approximation
+        ).encode('utf-8')
+    ).hexdigest()
