@@ -1,24 +1,8 @@
 deflate_dict>=1.0.8
 
-[all]
-numpy
-pandas
-numba
-
-[numba]
-numba
-
-[numpy]
-numpy
-
-[pandas]
-pandas
-
 [test]
 pytest
 pytest-cov
-coveralls
 validate_version_code
 random_dict
-codacy-coverage
 tqdm

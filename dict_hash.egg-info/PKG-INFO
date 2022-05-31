@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dict-hash
-Version: 1.1.20
+Version: 1.1.21
 Summary: Simple python tool to hash dictionaries using both default hash and sha256.
 Home-page: https://github.com/LucaCappelletti94/dict_hash
 Author: Luca Cappelletti
@@ -8,13 +8,15 @@ Author-email: cappelletti.luca94@gmail.com
 License: MIT
 Description: dict_hash
         =========================================================================================
-        |travis| |sonar_quality| |sonar_maintainability| |codacy|
-        |code_climate_maintainability| |pip| |downloads|
+        |pip| |downloads|
         
         Simple python tool to hash dictionaries using both default hash and sha256.
         The library comes with full support for hashing Pandas DataFrame objects,
         Numba objects and Numpy arrays, but you will need to specify the requirements
         when installing the package to avoid bloating the installation process.
+        
+        As we saw this library being used in the wild mostly to create caching libraries and wrappers,
+        we'd like to point you to our library, `Cache decorator <https://github.com/zommiommy/cache_decorator>`__.
         
         How do I install this package?
         ----------------------------------------------
@@ -22,10 +24,7 @@ Description: dict_hash
         
         .. code:: shell
         
-            pip install dict_hash[all] # To install everything
-            pip install dict_hash[numba] # To install with numba support
-            pip install dict_hash[numpy] # To install with numpy support
-            pip install dict_hash[pandas] # To install with pandas support
+            pip install dict_hash
         
         
         Tests Coverage
@@ -65,6 +64,30 @@ Description: dict_hash
             d = random_dict(randint(1, 10), randint(1, 10))
             my_hash = sha256(d)
         
+        Approximated hash
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        All of the methods shown offer the `use_approximation` parameter,
+        which allows you to switch to a more lightweight hashing procedure
+        where supported, for the various supported objects. This procedure
+        will randomly subsample the provided objects.
+        
+        Currently, we support this parameter for NumPy and Pandas objects.
+        
+        .. code:: python
+        
+            from dict_hash import sha256
+            from random_dict import random_dict
+            from random import randint
+        
+            # Even though the DataFrame is very big...
+            df = load_a_very_big_dataframe(...)
+            # an approximated hash is still very fast!
+            my_hash = sha256(
+                df,
+                use_approximation=True
+            )
+        
+        
         
         Hashable
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,25 +112,6 @@ Description: dict_hash
                         "a": self._a
                     })
         
-        .. |travis| image:: https://travis-ci.org/LucaCappelletti94/dict_hash.png
-           :target: https://travis-ci.org/LucaCappelletti94/dict_hash
-           :alt: Travis CI build
-        
-        .. |sonar_quality| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_dict_hash&metric=alert_status
-            :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_dict_hash
-            :alt: SonarCloud Quality
-        
-        .. |sonar_maintainability| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_dict_hash&metric=sqale_rating
-            :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_dict_hash
-            :alt: SonarCloud Maintainability
-        
-        .. |sonar_coverage| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_dict_hash&metric=coverage
-            :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_dict_hash
-            :alt: SonarCloud Coverage
-        
-        .. |coveralls| image:: https://coveralls.io/repos/github/LucaCappelletti94/dict_hash/badge.svg?branch=master
-            :target: https://coveralls.io/github/LucaCappelletti94/dict_hash?branch=master
-            :alt: Coveralls Coverage
         
         .. |pip| image:: https://badge.fury.io/py/dict-hash.svg
             :target: https://badge.fury.io/py/dict-hash
@@ -115,26 +119,9 @@ Description: dict_hash
         
         .. |downloads| image:: https://pepy.tech/badge/dict-hash
             :target: https://pepy.tech/badge/dict-hash
-            :alt: Pypi total project downloads 
-        
-        .. |codacy| image:: https://api.codacy.com/project/badge/Grade/d2954938378a4e4087ebac09b0e50f9e
-            :target: https://www.codacy.com/app/LucaCappelletti94/dict_hash?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LucaCappelletti94/dict_hash&amp;utm_campaign=Badge_Grade
-            :alt: Codacy Maintainability
-        
-        .. |code_climate_maintainability| image:: https://api.codeclimate.com/v1/badges/15f94bb26de6423d38f9/maintainability
-            :target: https://codeclimate.com/github/LucaCappelletti94/dict_hash/maintainability
-            :alt: Maintainability
-        
-        .. |code_climate_coverage| image:: https://api.codeclimate.com/v1/badges/15f94bb26de6423d38f9/test_coverage
-            :target: https://codeclimate.com/github/LucaCappelletti94/dict_hash/test_coverage
-            :alt: Code Climate Coverate
-        
+            :alt: Pypi total project downloads
 Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
 Provides-Extra: test
-Provides-Extra: numba
-Provides-Extra: numpy
-Provides-Extra: pandas
-Provides-Extra: all

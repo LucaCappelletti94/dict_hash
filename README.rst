@@ -1,4 +1,4 @@
-dict_hash
+Dict Hash
 =========================================================================================
 |pip| |downloads|
 
@@ -18,12 +18,6 @@ As usual, just download it using pip:
 
     pip install dict_hash
 
-
-Tests Coverage
-----------------------------------------------
-Since some software handling coverages sometimes get slightly different results, here's three of them:
-
-|coveralls| |sonar_coverage| |code_climate_coverage|
 
 Usage examples
 ----------------------------------------------
