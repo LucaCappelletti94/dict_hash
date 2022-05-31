@@ -6,7 +6,7 @@ Home-page: https://github.com/LucaCappelletti94/dict_hash
 Author: Luca Cappelletti
 Author-email: cappelletti.luca94@gmail.com
 License: MIT
-Description: dict_hash
+Description: Dict Hash
         =========================================================================================
         |pip| |downloads|
         
@@ -26,12 +26,6 @@ Description: dict_hash
         
             pip install dict_hash
         
-        
-        Tests Coverage
-        ----------------------------------------------
-        Since some software handling coverages sometimes get slightly different results, here's three of them:
-        
-        |coveralls| |sonar_coverage| |code_climate_coverage|
         
         Usage examples
         ----------------------------------------------
@@ -120,6 +114,7 @@ Description: dict_hash
         .. |downloads| image:: https://pepy.tech/badge/dict-hash
             :target: https://pepy.tech/badge/dict-hash
             :alt: Pypi total project downloads
+        
 Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
 Classifier: License :: OSI Approved :: MIT License
