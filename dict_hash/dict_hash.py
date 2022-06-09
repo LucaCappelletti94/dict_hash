@@ -79,16 +79,16 @@ def _convert(
         # A similar behaviour is required for DataFrames.
         if isinstance(data, pd.DataFrame):
             if use_approximation:
-                # We take at most the first 100 columns.
+                # We take at most the first 50 columns.
                 # This is needed because we have encountered DataFrames
                 # with millions of columns. Peace to the soul that made them.
-                if data.shape[1] > 100:
-                    data = data[data.columns[:100]]
-                # We sample 100 random lines of the dataframe, as some dataframes
+                if data.shape[1] > 50:
+                    data = data[data.columns[:50]]
+                # We sample 50 random lines of the dataframe, as some dataframes
                 # can contain millions of samples.
-                if data.shape[0] > 100:
+                if data.shape[0] > 50:
                     data = data.sample(
-                        n=min(data.shape[0], 100),
+                        n=50,
                         random_state=42
                     )
             return _convert(
@@ -120,9 +120,21 @@ def _convert(
     else:
         # And numpy arrays.
         if isinstance(data, np.ndarray):
+            if use_approximation:
+                # We take at most the first 50 columns.
+                # This is needed because we have encountered Numpy Arrays
+                # with millions of columns. Peace to the soul that made them.
+                if len(data.shape) > 1 and data.shape[1] > 50:
+                    data = data[:, :50]
+                # We sample 100 random lines of the dataframe, as some dataframes
+                # can contain millions of samples.
+                if data.shape[0] > 50:
+                    pnrg = np.random.RandomState(42)
+                    data = data[pnrg.randint(data.shape[0], size=50)]
+                
             return _convert(
                 pd.DataFrame(data),
-                use_approximation=use_approximation
+                use_approximation=False
             )
 
     ############################################
