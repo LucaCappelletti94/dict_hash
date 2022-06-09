@@ -131,7 +131,7 @@ def _convert(
                 if data.shape[0] > 50:
                     pnrg = np.random.RandomState(42)
                     data = data[pnrg.randint(data.shape[0], size=50)]
-                
+
             return _convert(
                 pd.DataFrame(data),
                 use_approximation=False
@@ -148,24 +148,61 @@ def _convert(
     else:
         # And iterables such as lists and tuples.
         if isinstance(data, typed.List):
-            return list(map(_convert, data))
+            return [
+                _convert(
+                    e,
+                    use_approximation=use_approximation
+                )
+                for e in data
+            ]
         # If it is a dictionary we need to hash every element of it.
         if isinstance(data, typed.Dict):
-            return dict(map(_convert, list(data.items())))
+            return dict([
+                _convert(
+                    (key, value),
+                    use_approximation=use_approximation
+                )
+                for key, value in data.items()
+            ])
 
     # And iterables such as lists and tuples.
     if isinstance(data, list):
-        return list(map(_convert, data))
+        return [
+            _convert(
+                e,
+                use_approximation=use_approximation
+            )
+            for e in data
+        ]
 
     # If it is a dictionary we need to hash every element of it.
     if isinstance(data, dict):
-        return dict(map(_convert, list(data.items())))
+        return dict(
+            _convert(
+                (key, value),
+                use_approximation=use_approximation
+            )
+            for key, value in data.items()
+        )
 
+    # And iterables such as lists and tuples.
     if isinstance(data, tuple):
-        return tuple(map(_convert, data))
+        return tuple(
+            _convert(
+                e,
+                use_approximation=use_approximation
+            )
+            for e in data
+        )
 
     if isinstance(data, set):
-        return sorted(map(_convert, data))
+        return sorted([
+            _convert(
+                e,
+                use_approximation=use_approximation
+            )
+            for e in data
+        ])
 
     if isinstance(data, Callable):
         return "".join(
