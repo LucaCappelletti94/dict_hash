@@ -146,24 +146,29 @@ def _convert(
     except (ModuleNotFoundError, ImportError):
         pass
     else:
-        # And iterables such as lists and tuples.
-        if isinstance(data, typed.List):
-            return [
-                _convert(
-                    e,
-                    use_approximation=use_approximation
-                )
-                for e in data
-            ]
-        # If it is a dictionary we need to hash every element of it.
-        if isinstance(data, typed.Dict):
-            return dict([
-                _convert(
-                    (key, value),
-                    use_approximation=use_approximation
-                )
-                for key, value in data.items()
-            ])
+        try:
+            # And iterables such as lists and tuples.
+            if isinstance(data, typed.List):
+                return [
+                    _convert(
+                        e,
+                        use_approximation=use_approximation
+                    )
+                    for e in data
+                ]
+            # If it is a dictionary we need to hash every element of it.
+            if isinstance(data, typed.Dict):
+                return dict([
+                    _convert(
+                        (key, value),
+                        use_approximation=use_approximation
+                    )
+                    for key, value in data.items()
+                ])
+        # In some old numba versions there is no attribute
+        # List of Dict in typed.
+        except AttributeError:
+            pass
 
     # And iterables such as lists and tuples.
     if isinstance(data, list):
