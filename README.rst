@@ -7,6 +7,8 @@ The library comes with full support for hashing Pandas DataFrame objects,
 Numba objects and Numpy arrays, but you will need to specify the requirements
 when installing the package to avoid bloating the installation process.
 
+Furthermore, the library supports objects that can be recursively hashed.
+
 As we saw this library being used in the wild mostly to create caching libraries and wrappers,
 we'd like to point you to our library, `Cache decorator <https://github.com/zommiommy/cache_decorator>`__.
 
