@@ -3,10 +3,19 @@ import hashlib
 import inspect
 import json
 from typing import Callable, Dict, List
-
+import re
 from deflate_dict import deflate
 
 from .hashable import Hashable
+
+
+class NotHashableException(Exception):
+    pass
+
+
+IGNORED_UNASHABLE_OBJECT_ATTRIBUTES = [
+    "_repr_html_",
+]
 
 
 def _convert(
@@ -209,18 +218,41 @@ def _convert(
             for e in data
         ])
 
+    if isinstance(data, re.Pattern):
+        return data.pattern
+
     if isinstance(data, Callable):
         return "".join(
             inspect.getsourcelines(data)[0]
         )
 
+    try:
+        return _sanitize({
+            key: data.__getattribute__(key)
+            for key in dir(data)
+            if (
+                key not in IGNORED_UNASHABLE_OBJECT_ATTRIBUTES and
+                data.__getattribute__(key).__class__.__module__ not in ("__builtin__", "builtins") and
+                type(data.__getattribute__(key)).__name__ not in ("method-wrapper", "builtin_function_or_method")
+            )
+        })
+    except NotHashableException:
+        pass
+
     # Otherwise we need to raise an exception to warn the user.
-    raise NotImplementedError(
+    raise NotHashableException(
         (
             "Object of class {} not currently supported. "
-            "Please do consider opening up an issue and related "
+            "You can easily adding support for the object "
+            "by extending the `Hashable` abstract class for "
+            "your object of interest. "
+            "If you believe this object to be of extremely common use, "
+            "please do consider opening up an issue and related "
             "pull requested on the `dict_hash` GitHub repository "
-            "to add support for this new type of object."
+            "to add support for this new type of object. "
+            "We only consider for the inclusion in the library "
+            "either extremely commonly used objects or objects "
+            "that impact often our projects."
         ).format(data.__class__.__name__)
     )
 

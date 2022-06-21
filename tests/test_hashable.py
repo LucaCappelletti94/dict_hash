@@ -1,6 +1,6 @@
 import pytest
 from time import time
-from dict_hash import Hashable, validate_consistent_hash, sha256
+from dict_hash import Hashable, validate_consistent_hash, sha256, NotHashableException
 
 
 class MyHashable(Hashable):
@@ -13,6 +13,13 @@ class MyHashable(Hashable):
         return sha256({
             "a": self._a
         })
+
+
+class NotHashable:
+
+    @property
+    def consistent_hash(self) -> str:
+        raise NotHashableException()
 
 
 def test_hashable():
@@ -32,3 +39,8 @@ def test_hashable():
     }) == sha256({
         "my_hashable": b
     })
+
+
+def test_not_hashable():
+    with pytest.raises(NotHashableException):
+        sha256({"a": NotHashable()})
