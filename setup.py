@@ -62,6 +62,7 @@ setup(
     tests_require=test_deps,
     install_requires=[
         "deflate_dict>=1.0.8",
+        "support_luca>=1.0.2"
     ],
     extras_require=extras,
 )
