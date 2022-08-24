@@ -1,5 +1,5 @@
 deflate_dict>=1.0.8
-support_luca>=1.0.2
+support_developer>=1.0.2
 
 [test]
 pytest
