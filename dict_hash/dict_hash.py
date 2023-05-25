@@ -71,14 +71,14 @@ def _convert(
         # If the given object is a numpy integer, we convert it to a python integer.
         if isinstance(
             data,
-            (np.uint128, np.uint64, np.uint32, np.uint16, np.uint8, np.int128, np.int64, np.int32, np.int16, np.int8)
+            (np.uint64, np.uint32, np.uint16, np.uint8, np.int64, np.int32, np.int16, np.int8)
         ):
             return int(data)
         
         # If the given object is a numpy float, we convert it to a python float.
         if isinstance(
             data,
-            (np.float128, np.float96, np.float80, np.float64, np.float32, np.float16, np.float_)
+            (np.float64, np.float32, np.float16, np.float_)
         ):
             return float(data)
 
