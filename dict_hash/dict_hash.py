@@ -236,7 +236,7 @@ def _convert(
                 type(data.__getattribute__(key)).__name__ not in ("method-wrapper", "builtin_function_or_method")
             )
         })
-    except NotHashableException:
+    except (NotHashableException, RecursionError):
         pass
 
     # Otherwise we need to raise an exception to warn the user.
