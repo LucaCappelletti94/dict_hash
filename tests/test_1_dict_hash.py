@@ -14,7 +14,7 @@ def test_dict_hash():
 def test_dict_hash_without_approximation_1d():
     """Test to make sure that the hash is stable for 1d arrays."""
     d = create_dict()
-    d["this_is_big"] = [np.full((1000,), 1)]
+    d["this_is_big"] = [np.full((731,), 1)]
     assert dict_hash(d) == dict_hash(d)
     assert sha256(d) == sha256(d)
     Path(sha256(d)).touch()
@@ -23,7 +23,7 @@ def test_dict_hash_without_approximation_1d():
 def test_dict_hash_without_approximation_2d():
     """Test to make sure that the hash is stable for 2d arrays."""
     d = create_dict()
-    d["this_is_big"] = [np.full((1000, 100), 2)]
+    d["this_is_big"] = [np.full((873, 100), 2)]
     assert dict_hash(d) == dict_hash(d)
     assert sha256(d) == sha256(d)
     Path(sha256(d)).touch()
@@ -32,7 +32,7 @@ def test_dict_hash_without_approximation_2d():
 def test_dict_hash_without_approximation_3d():
     """Test to make sure that the hash is stable for 3d arrays."""
     d = create_dict()
-    d["this_is_big"] = [np.full((1000, 100, 2), 3)]
+    d["this_is_big"] = [np.full((1013, 100, 2), 3)]
     assert dict_hash(d) == dict_hash(d)
     assert sha256(d) == sha256(d)
     Path(sha256(d)).touch()

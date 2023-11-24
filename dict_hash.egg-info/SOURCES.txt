@@ -12,3 +12,9 @@ dict_hash.egg-info/SOURCES.txt
 dict_hash.egg-info/dependency_links.txt
 dict_hash.egg-info/requires.txt
 dict_hash.egg-info/top_level.txt
+tests/test_1_dict_hash.py
+tests/test_2_dict_hash.py
+tests/test_dict_hash_failure.py
+tests/test_hashable.py
+tests/test_version.py
+tests/test_with_different_keys_order.py

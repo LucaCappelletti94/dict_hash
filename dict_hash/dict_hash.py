@@ -141,9 +141,13 @@ def _convert(data: object, use_approximation: bool = False) -> object:
     else:
         # And numpy arrays.
         if isinstance(data, np.ndarray):
-            # We reshape the array so it is always 2D, 
+            # We reshape the array so it is always 2D,
             # with at most 50 columns.
-            data = data.reshape(-1, min(data.size, 50))
+            if data.ndim == 1:
+                data = data.reshape(-1, 1)
+            if data.ndim > 2:
+                product_of_dimensions = np.prod(data.shape[1:])
+                data = data.reshape(-1, product_of_dimensions)
 
             if use_approximation:
                 # We sample 100 random lines of the dataframe, as some dataframes
