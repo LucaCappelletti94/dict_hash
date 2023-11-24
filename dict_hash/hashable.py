@@ -1,3 +1,6 @@
+"""Submodule that contains the abstract class Hashable."""
+
+
 class Hashable:
     """The class Hashable has to be implemented by objects you want to hash.
 

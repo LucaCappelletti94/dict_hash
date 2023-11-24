@@ -1,3 +1,4 @@
+"""Script containing function to validate consistent hash."""
 from .hashable import Hashable
 
 
