@@ -1,3 +1,4 @@
+"""Module containing the main function of the package."""
 import datetime
 import hashlib
 import inspect
@@ -10,7 +11,7 @@ from .hashable import Hashable
 
 
 class NotHashableException(Exception):
-    pass
+    """Exception raised when an object is not hashable."""
 
 
 IGNORED_UNASHABLE_OBJECT_ATTRIBUTES = [
@@ -18,16 +19,13 @@ IGNORED_UNASHABLE_OBJECT_ATTRIBUTES = [
 ]
 
 
-def _convert(
-    data: object,
-    use_approximation: bool = False
-) -> object:
+def _convert(data: object, use_approximation: bool = False) -> object:
     """Returns given data as an hashable object or dictionary.
 
     Parameters
     ------------------
     data: object
-        The data 
+        The data
     use_approximation: bool = False
         Whether to employ approximations, such as sampling
         random values in pandas dataframe (using a fixed deterministic
@@ -64,22 +62,28 @@ def _convert(
     ############################################
 
     try:
-        import numpy as np
+        import numpy as np  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError:
         pass
     else:
         # If the given object is a numpy integer, we convert it to a python integer.
         if isinstance(
             data,
-            (np.uint64, np.uint32, np.uint16, np.uint8, np.int64, np.int32, np.int16, np.int8)
+            (
+                np.uint64,
+                np.uint32,
+                np.uint16,
+                np.uint8,
+                np.int64,
+                np.int32,
+                np.int16,
+                np.int8,
+            ),
         ):
             return int(data)
-        
+
         # If the given object is a numpy float, we convert it to a python float.
-        if isinstance(
-            data,
-            (np.float64, np.float32, np.float16, np.float_)
-        ):
+        if isinstance(data, (np.float64, np.float32, np.float16, np.float_)):
             return float(data)
 
         if isinstance(data, (np.str_, np.string_)):
@@ -89,13 +93,13 @@ def _convert(
     # or a float we can leave it to be hashed.
     if isinstance(data, (str, int, float)):
         return data
-    
+
     ############################################
     # Handling hashing of pandas objects       #
     ############################################
 
     try:
-        import pandas as pd
+        import pandas as pd  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError:
         pass
     else:
@@ -110,21 +114,15 @@ def _convert(
                 # We sample 50 random lines of the dataframe, as some dataframes
                 # can contain millions of samples.
                 if data.shape[0] > 50:
-                    data = data.sample(
-                        n=50,
-                        random_state=42
-                    )
-            return _convert(
-                data.to_dict(),
-                use_approximation=use_approximation
-            )
+                    data = data.sample(n=50, random_state=42)
+            return _convert(data.to_dict(), use_approximation=use_approximation)
 
     ############################################
     # Handling hashing of Ensmallen objects    #
     ############################################
 
     try:
-        from ensmallen import Graph
+        from ensmallen import Graph  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError:
         pass
     else:
@@ -136,58 +134,47 @@ def _convert(
     ############################################
 
     try:
-        import numpy as np
-        import pandas as pd
+        import numpy as np  # pylint: disable=import-outside-toplevel
+        import pandas as pd  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError:
         pass
     else:
         # And numpy arrays.
         if isinstance(data, np.ndarray):
+            # We reshape the array so it is always 2D, 
+            # with at most 50 columns.
+            data = data.reshape(-1, min(data.size, 50))
+
             if use_approximation:
-                # We take at most the first 50 columns.
-                # This is needed because we have encountered Numpy Arrays
-                # with millions of columns. Peace to the soul that made them.
-                if len(data.shape) > 1 and data.shape[1] > 50:
-                    data = data[:, :50]
                 # We sample 100 random lines of the dataframe, as some dataframes
                 # can contain millions of samples.
                 if data.shape[0] > 50:
-                    pnrg = np.random.RandomState(42)
+                    pnrg = np.random.RandomState(42)  # pylint: disable=no-member
                     data = data[pnrg.randint(data.shape[0], size=50)]
 
-            return _convert(
-                pd.DataFrame(data),
-                use_approximation=False
-            )
+            return _convert(pd.DataFrame(data), use_approximation=False)
 
     ############################################
     # Handling hashing of numba array objects  #
     ############################################
 
     try:
-        from numba import typed
+        from numba import typed  # pylint: disable=import-outside-toplevel
     except (ModuleNotFoundError, ImportError):
         pass
     else:
         try:
             # And iterables such as lists and tuples.
             if isinstance(data, typed.List):
-                return [
-                    _convert(
-                        e,
-                        use_approximation=use_approximation
-                    )
-                    for e in data
-                ]
+                return [_convert(e, use_approximation=use_approximation) for e in data]
             # If it is a dictionary we need to hash every element of it.
             if isinstance(data, typed.Dict):
-                return dict([
-                    _convert(
-                        (key, value),
-                        use_approximation=use_approximation
-                    )
-                    for key, value in data.items()
-                ])
+                return dict(
+                    [
+                        _convert((key, value), use_approximation=use_approximation)
+                        for key, value in data.items()
+                    ]
+                )
         # In some old numba versions there is no attribute
         # List of Dict in typed.
         except AttributeError:
@@ -195,68 +182,49 @@ def _convert(
 
     # And iterables such as lists and tuples.
     if isinstance(data, list):
-        return [
-            _convert(
-                e,
-                use_approximation=use_approximation
-            )
-            for e in data
-        ]
+        return [_convert(e, use_approximation=use_approximation) for e in data]
 
     # If it is a dictionary we need to hash every element of it.
     if isinstance(data, dict):
         return dict(
-            _convert(
-                (key, value),
-                use_approximation=use_approximation
-            )
+            _convert((key, value), use_approximation=use_approximation)
             for key, value in data.items()
         )
 
     # And iterables such as lists and tuples.
     if isinstance(data, tuple):
-        return tuple(
-            _convert(
-                e,
-                use_approximation=use_approximation
-            )
-            for e in data
-        )
+        return tuple(_convert(e, use_approximation=use_approximation) for e in data)
 
     if isinstance(data, set):
-        return sorted([
-            _convert(
-                e,
-                use_approximation=use_approximation
-            )
-            for e in data
-        ])
+        return sorted([_convert(e, use_approximation=use_approximation) for e in data])
 
     if isinstance(data, re.Pattern):
         return data.pattern
 
     if isinstance(data, Callable):
-        return "".join(
-            inspect.getsourcelines(data)[0]
-        )
+        return "".join(inspect.getsourcelines(data)[0])
 
     try:
-        return _sanitize({
-            key: data.__getattribute__(key)
-            for key in dir(data)
-            if (
-                key not in IGNORED_UNASHABLE_OBJECT_ATTRIBUTES and
-                data.__getattribute__(key).__class__.__module__ not in ("__builtin__", "builtins") and
-                type(data.__getattribute__(key)).__name__ not in ("method-wrapper", "builtin_function_or_method")
-            )
-        })
+        return _sanitize(
+            {
+                key: getattr(data, key)
+                for key in dir(data)
+                if (
+                    key not in IGNORED_UNASHABLE_OBJECT_ATTRIBUTES
+                    and getattr(data, key).__class__.__module__
+                    not in ("__builtin__", "builtins")
+                    and type(getattr(data, key)).__name__
+                    not in ("method-wrapper", "builtin_function_or_method")
+                )
+            }
+        )
     except (NotHashableException, RecursionError):
         pass
 
     # Otherwise we need to raise an exception to warn the user.
     raise NotHashableException(
         (
-            "Object of class {} not currently supported. "
+            f"Object of class {data.__class__.__name__} not currently supported. "
             "You can easily adding support for the object "
             "by extending the `Hashable` abstract class for "
             "your object of interest. "
@@ -267,14 +235,11 @@ def _convert(
             "We only consider for the inclusion in the library "
             "either extremely commonly used objects or objects "
             "that impact often our projects."
-        ).format(data.__class__.__name__)
+        )
     )
 
 
-def _sanitize(
-    dictionary: Dict,
-    use_approximation: bool = False
-) -> str:
+def _sanitize(dictionary: Dict, use_approximation: bool = False) -> str:
     """Return given dictionary as JSON string.
 
     Parameters
@@ -299,22 +264,21 @@ def _sanitize(
     JSON string representation of given dictionary.
     """
     if not isinstance(dictionary, (Dict, List)):
-        raise ValueError((
-            "Given object to hash is not a dictionary nor a List, "
-            "but a {} object, which is not currently supported."
-        ).format(
-            dictionary.__class__.__name__
-        ))
-    return json.dumps(deflate(_convert(
-        dictionary,
-        use_approximation=use_approximation
-    ), leave_tuples=True), sort_keys=True)
+        raise ValueError(
+            (
+                "Given object to hash is not a dictionary nor a List, "
+                f"but a {dictionary.__class__.__name__} object, which is not currently supported."
+            )
+        )
+    return json.dumps(
+        deflate(
+            _convert(dictionary, use_approximation=use_approximation), leave_tuples=True
+        ),
+        sort_keys=True,
+    )
 
 
-def dict_hash(
-    dictionary: Dict,
-    use_approximation: bool = False
-) -> str:
+def dict_hash(dictionary: Dict, use_approximation: bool = False) -> str:
     """Return hash of given dict (may not be equal for every session).
 
     Parameters
@@ -333,16 +297,10 @@ def dict_hash(
     ------------------
     Session hash for the given dictionary.
     """
-    return hash(_sanitize(
-        dictionary,
-        use_approximation=use_approximation
-    ))
+    return hash(_sanitize(dictionary, use_approximation=use_approximation))
 
 
-def sha256(
-    dictionary: Dict,
-    use_approximation: bool = False
-) -> str:
+def sha256(dictionary: Dict, use_approximation: bool = False) -> str:
     """Return sha256 of given dict.
 
     Parameters
@@ -362,8 +320,5 @@ def sha256(
     Deterministic hash for the given dictionary.
     """
     return hashlib.sha256(
-        _sanitize(
-            dictionary,
-            use_approximation=use_approximation
-        ).encode('utf-8')
+        _sanitize(dictionary, use_approximation=use_approximation).encode("utf-8")
     ).hexdigest()

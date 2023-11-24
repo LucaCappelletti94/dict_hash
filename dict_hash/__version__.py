@@ -1,2 +1,2 @@
 """Current version of package dict_hash"""
-__version__ = "1.1.32"
+__version__ = "1.1.33"
