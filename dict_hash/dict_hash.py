@@ -150,6 +150,9 @@ def _convert(data: object, use_approximation: bool = False) -> object:
                 data = data.reshape(-1, product_of_dimensions)
 
             if use_approximation:
+                if data.shape[1] > 50:
+                    data = data[:, :50]
+
                 # We sample 100 random lines of the dataframe, as some dataframes
                 # can contain millions of samples.
                 if data.shape[0] > 50:
