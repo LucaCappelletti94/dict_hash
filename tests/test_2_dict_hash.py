@@ -82,3 +82,12 @@ def test_dict_hash_with_approximation_4d():
     path = sha256(d, use_approximation=True)
     assert os.path.exists(path)
     os.remove(path)
+
+
+def test_dict_hash_with_approximation_4d_with_different_shape():
+    """Test to make sure that the hash is stable for 4d arrays with approximations."""
+    d = create_dict()
+    d["this_is_big"] = [np.full((1000, 10, 3, 3), 8)]
+    path = sha256(d, use_approximation=True)
+    assert os.path.exists(path)
+    os.remove(path)

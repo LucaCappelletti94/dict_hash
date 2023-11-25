@@ -105,6 +105,12 @@ def _convert(data: object, use_approximation: bool = False) -> object:
     else:
         # A similar behaviour is required for DataFrames.
         if isinstance(data, pd.DataFrame):
+            # We store the initial shape of the dataframe, so
+            # we can make it part of the hash even if we
+            # use the approximation and sample only a part
+            # of the dataframe.
+            shape = data.shape
+
             if use_approximation:
                 # We take at most the first 50 columns.
                 # This is needed because we have encountered DataFrames
@@ -115,7 +121,10 @@ def _convert(data: object, use_approximation: bool = False) -> object:
                 # can contain millions of samples.
                 if data.shape[0] > 50:
                     data = data.sample(n=50, random_state=42)
-            return _convert(data.to_dict(), use_approximation=use_approximation)
+            return _convert({
+                "hash": _convert(data.to_dict(), use_approximation=use_approximation),
+                "shape": shape,
+            })
 
     ############################################
     # Handling hashing of Ensmallen objects    #
@@ -141,6 +150,12 @@ def _convert(data: object, use_approximation: bool = False) -> object:
     else:
         # And numpy arrays.
         if isinstance(data, np.ndarray):
+            # We store the initial shape of the array, so
+            # we can make it part of the hash even if we
+            # use the approximation and sample only a part
+            # of the array.
+            shape = data.shape
+
             # We reshape the array so it is always 2D,
             # with at most 50 columns.
             if data.ndim == 1:
@@ -159,7 +174,14 @@ def _convert(data: object, use_approximation: bool = False) -> object:
                     pnrg = np.random.RandomState(42)  # pylint: disable=no-member
                     data = data[pnrg.randint(data.shape[0], size=50)]
 
-            return _convert(pd.DataFrame(data), use_approximation=False)
+            return _convert(
+                {
+                    "hash": _convert(
+                        pd.DataFrame(data), use_approximation=use_approximation
+                    ),
+                    "shape": shape,
+                }
+            )
 
     ############################################
     # Handling hashing of numba array objects  #

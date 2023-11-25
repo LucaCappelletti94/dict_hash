@@ -81,3 +81,20 @@ def test_dict_hash_with_approximation_4d():
     assert dict_hash(d, use_approximation=True) == dict_hash(d, use_approximation=True)
     assert sha256(d, use_approximation=True) == sha256(d, use_approximation=True)
     Path(sha256(d, use_approximation=True)).touch()
+
+
+def test_dict_hash_with_approximation_4d_with_different_shape():
+    """Test to make sure that the approximation works for 4d arrays."""
+    d = create_dict()
+    d["this_is_big"] = [np.full((1000, 10, 3, 3), 8)]
+    assert dict_hash(d, use_approximation=True) == dict_hash(d, use_approximation=True)
+    assert sha256(d, use_approximation=True) == sha256(d, use_approximation=True)
+
+    previous = create_dict()
+    previous["this_is_big"] = [np.full((1000, 10, 3, 2), 8)]
+
+    assert dict_hash(d, use_approximation=True) != dict_hash(
+        previous, use_approximation=True
+    )
+
+    Path(sha256(d, use_approximation=True)).touch()
