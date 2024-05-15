@@ -9,3 +9,4 @@ htmlcov
 .ipynb_checkpoints
 build/
 dist
+.mypy_cache
