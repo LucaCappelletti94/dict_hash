@@ -109,6 +109,6 @@ Here is an example:
     :target: https://pepy.tech/badge/dict-hash
     :alt: Pypi total project downloads
 
-.. |github_actions| image:: https://github.com/LucaCappelletti/dict_hash/actions/workflows/python.yml/badge.svg
-    :target: https://github.com/LucaCappelletti/dict_hash/actions/
+.. |github_actions| image:: https://github.com/LucaCappelletti94/dict_hash/actions/workflows/python.yml/badge.svg
+    :target: https://github.com/LucaCappelletti94/dict_hash/actions/
     :alt: Github Actions

@@ -37,6 +37,7 @@ test_deps = [
     "random_dict",
     "netaddr",
     "polars",
+    "numba",
     "tqdm",
 ]
 
