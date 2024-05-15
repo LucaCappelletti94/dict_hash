@@ -1,6 +1,6 @@
 Dict Hash
 =========================================================================================
-|pip| |downloads|
+|pip| |downloads| |github_actions|
 
 Simple python tool to hash dictionaries using both default hash and sha256.
 The library comes with full support for hashing Pandas DataFrame objects,
@@ -108,3 +108,7 @@ Here is an example:
 .. |downloads| image:: https://pepy.tech/badge/dict-hash
     :target: https://pepy.tech/badge/dict-hash
     :alt: Pypi total project downloads
+
+.. |github_actions| image:: https://github.com/LucaCappelletti/dict_hash/actions/workflows/python.yml/badge.svg
+    :target: https://github.com/LucaCappelletti/dict_hash/actions/
+    :alt: Github Actions

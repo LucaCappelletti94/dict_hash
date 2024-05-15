@@ -1,9 +1,11 @@
 """Module containing the main function of the package."""
+
 import datetime
 import hashlib
 import inspect
 import json
-from typing import Callable, Dict, List
+import warnings
+from typing import Callable, Dict, List, Any
 import re
 from deflate_dict import deflate
 
@@ -14,12 +16,22 @@ class NotHashableException(Exception):
     """Exception raised when an object is not hashable."""
 
 
+class NotHashableWarning(UserWarning):
+    """Warning raised when an object is not hashable."""
+
+
 IGNORED_UNASHABLE_OBJECT_ATTRIBUTES = [
     "_repr_html_",
 ]
 
 
-def _convert(data: object, use_approximation: bool = False) -> object:
+def _convert(
+    data: Any,
+    current_depth: int = 0,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> Any:
     """Returns given data as an hashable object or dictionary.
 
     Parameters
@@ -33,12 +45,39 @@ def _convert(data: object, use_approximation: bool = False) -> object:
         needed when you need to hash frequently big pandas dataframes
         and you do not care about generating a very precise hash
         but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Hashable object or dictionary.
 
     Raises
     ------------------
-    NotImplementedError
-        When we have no clue what to do with the provided object yet.
+    NotHashableException
+        When we have no clue what to do with the provided object yet and we need to raise an error.
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When we have no clue what to do with the provided object yet and we need to warn the user.
     """
+    if current_depth > maximal_recursion:
+        raise RecursionError(
+            (
+                f"Recursion depth exceeded {maximal_recursion}. "
+                "Please consider increasing the maximal recursion depth "
+                "or simplifying the object to hash."
+            )
+        )
+
     # If the object is a None.
     if data is None:
         return "None"
@@ -121,10 +160,21 @@ def _convert(data: object, use_approximation: bool = False) -> object:
                 # can contain millions of samples.
                 if data.shape[0] > 50:
                     data = data.sample(n=50, random_state=42)
-            return _convert({
-                "hash": _convert(data.to_dict(), use_approximation=use_approximation),
-                "shape": shape,
-            })
+            return _convert(
+                {
+                    "hash": _convert(
+                        data.to_dict(),
+                        current_depth=current_depth + 1,
+                        use_approximation=use_approximation,
+                        behavior_on_error=behavior_on_error,
+                        maximal_recursion=maximal_recursion,
+                    ),
+                    "shape": shape,
+                },
+                current_depth=current_depth + 1,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
 
     ############################################
     # Handling hashing of Ensmallen objects    #
@@ -177,10 +227,17 @@ def _convert(data: object, use_approximation: bool = False) -> object:
             return _convert(
                 {
                     "hash": _convert(
-                        pd.DataFrame(data), use_approximation=use_approximation
+                        pd.DataFrame(data),
+                        current_depth=current_depth + 1,
+                        use_approximation=use_approximation,
+                        behavior_on_error=behavior_on_error,
+                        maximal_recursion=maximal_recursion,
                     ),
                     "shape": shape,
-                }
+                },
+                current_depth=current_depth + 1,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
             )
 
     ############################################
@@ -195,12 +252,27 @@ def _convert(data: object, use_approximation: bool = False) -> object:
         try:
             # And iterables such as lists and tuples.
             if isinstance(data, typed.List):
-                return [_convert(e, use_approximation=use_approximation) for e in data]
+                return [
+                    _convert(
+                        e,
+                        current_depth=current_depth + 1,
+                        use_approximation=use_approximation,
+                        behavior_on_error=behavior_on_error,
+                        maximal_recursion=maximal_recursion,
+                    )
+                    for e in data
+                ]
             # If it is a dictionary we need to hash every element of it.
             if isinstance(data, typed.Dict):
                 return dict(
                     [
-                        _convert((key, value), use_approximation=use_approximation)
+                        _convert(
+                            (key, value),
+                            current_depth=current_depth + 1,
+                            use_approximation=use_approximation,
+                            behavior_on_error=behavior_on_error,
+                            maximal_recursion=maximal_recursion,
+                        )
                         for key, value in data.items()
                     ]
                 )
@@ -211,21 +283,56 @@ def _convert(data: object, use_approximation: bool = False) -> object:
 
     # And iterables such as lists and tuples.
     if isinstance(data, list):
-        return [_convert(e, use_approximation=use_approximation) for e in data]
+        return [
+            _convert(
+                e,
+                current_depth=current_depth + 1,
+                use_approximation=use_approximation,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
+            for e in data
+        ]
 
     # If it is a dictionary we need to hash every element of it.
     if isinstance(data, dict):
         return dict(
-            _convert((key, value), use_approximation=use_approximation)
+            _convert(
+                (key, value),
+                current_depth=current_depth + 1,
+                use_approximation=use_approximation,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
             for key, value in data.items()
         )
 
     # And iterables such as lists and tuples.
     if isinstance(data, tuple):
-        return tuple(_convert(e, use_approximation=use_approximation) for e in data)
+        return tuple(
+            _convert(
+                e,
+                current_depth=current_depth + 1,
+                use_approximation=use_approximation,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
+            for e in data
+        )
 
     if isinstance(data, set):
-        return sorted([_convert(e, use_approximation=use_approximation) for e in data])
+        return sorted(
+            [
+                _convert(
+                    e,
+                    current_depth=current_depth + 1,
+                    use_approximation=use_approximation,
+                    behavior_on_error=behavior_on_error,
+                    maximal_recursion=maximal_recursion,
+                )
+                for e in data
+            ]
+        )
 
     if isinstance(data, re.Pattern):
         return data.pattern
@@ -245,36 +352,51 @@ def _convert(data: object, use_approximation: bool = False) -> object:
                     and type(getattr(data, key)).__name__
                     not in ("method-wrapper", "builtin_function_or_method")
                 )
-            }
+            },
         )
-    except (NotHashableException, RecursionError):
+    except (NotHashableException, TypeError, RecursionError):
         pass
 
-    # Otherwise we need to raise an exception to warn the user.
-    raise NotHashableException(
-        (
-            f"Object of class {data.__class__.__name__} not currently supported. "
-            "You can easily adding support for the object "
-            "by extending the `Hashable` abstract class for "
-            "your object of interest. "
-            "If you believe this object to be of extremely common use, "
-            "please do consider opening up an issue and related "
-            "pull requested on the `dict_hash` GitHub repository "
-            "to add support for this new type of object. "
-            "We only consider for the inclusion in the library "
-            "either extremely commonly used objects or objects "
-            "that impact often our projects."
-        )
+    if behavior_on_error == "ignore":
+        return "Unhashable object"
+
+    message = (
+        f"Object of class {data.__class__.__name__} not currently supported. "
+        "You can easily adding support for the object "
+        "by extending the `Hashable` abstract class for "
+        "your object of interest. "
+        "If you believe this object to be of extremely common use, "
+        "please do consider opening up an issue and related "
+        "pull requested on the `dict_hash` GitHub repository "
+        "to add support for this new type of object. "
+        "We only consider for the inclusion in the library "
+        "either extremely commonly used objects or objects "
+        "that impact often our projects."
     )
 
+    if behavior_on_error == "warn":
+        warnings.warn(message, NotHashableWarning)
+        return "Unhashable object"
 
-def _sanitize(dictionary: Dict, use_approximation: bool = False) -> str:
+    # Otherwise we need to raise an exception to warn the user.
+    raise NotHashableException(message)
+
+
+def _sanitize(
+    dictionary: Dict,
+    current_depth: int = 0,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
     """Return given dictionary as JSON string.
 
     Parameters
     -------------------
     dictionary: Dict
         Dictionary to be converted to JSON.
+    current_depth: int = 0
+        Current recursion depth.
     use_approximation: bool = False
         Whether to employ approximations, such as sampling
         random values in pandas dataframe (using a fixed deterministic
@@ -282,15 +404,33 @@ def _sanitize(dictionary: Dict, use_approximation: bool = False) -> str:
         needed when you need to hash frequently big pandas dataframes
         and you do not care about generating a very precise hash
         but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    -------------------
+    JSON string representation of given dictionary.
 
     Raises
     -------------------
     ValueError
         When the given object is not a dictionary.
+    ValueError
+        When the given value for `behavior_on_error` is not supported.
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
 
-    Returns
+    Warns
     -------------------
-    JSON string representation of given dictionary.
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
     """
     if not isinstance(dictionary, (Dict, List)):
         raise ValueError(
@@ -299,15 +439,38 @@ def _sanitize(dictionary: Dict, use_approximation: bool = False) -> str:
                 f"but a {dictionary.__class__.__name__} object, which is not currently supported."
             )
         )
+    if not isinstance(behavior_on_error, str) or behavior_on_error not in (
+        "raise",
+        "warn",
+        "ignore",
+    ):
+        raise ValueError(
+            (
+                "Given value for `behavior_on_error` is not supported. "
+                "Please provide a value in ('raise', 'warn', 'ignore')."
+            )
+        )
     return json.dumps(
         deflate(
-            _convert(dictionary, use_approximation=use_approximation), leave_tuples=True
+            _convert(
+                dictionary,
+                current_depth=current_depth,
+                use_approximation=use_approximation,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            ),
+            leave_tuples=True,
         ),
         sort_keys=True,
     )
 
 
-def dict_hash(dictionary: Dict, use_approximation: bool = False) -> str:
+def dict_hash(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
     """Return hash of given dict (may not be equal for every session).
 
     Parameters
@@ -321,15 +484,48 @@ def dict_hash(dictionary: Dict, use_approximation: bool = False) -> str:
         needed when you need to hash frequently big pandas dataframes
         and you do not care about generating a very precise hash
         but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
 
     Returns
     ------------------
     Session hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
     """
-    return hash(_sanitize(dictionary, use_approximation=use_approximation))
+    return hash(
+        _sanitize(
+            dictionary,
+            use_approximation=use_approximation,
+            behavior_on_error=behavior_on_error,
+            maximal_recursion=maximal_recursion,
+        )
+    )
 
 
-def sha256(dictionary: Dict, use_approximation: bool = False) -> str:
+def sha256(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
     """Return sha256 of given dict.
 
     Parameters
@@ -343,11 +539,37 @@ def sha256(dictionary: Dict, use_approximation: bool = False) -> str:
         needed when you need to hash frequently big pandas dataframes
         and you do not care about generating a very precise hash
         but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
 
     Returns
     ------------------
     Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
     """
     return hashlib.sha256(
-        _sanitize(dictionary, use_approximation=use_approximation).encode("utf-8")
+        _sanitize(
+            dictionary,
+            use_approximation=use_approximation,
+            behavior_on_error=behavior_on_error,
+            maximal_recursion=maximal_recursion,
+        ).encode("utf-8")
     ).hexdigest()
