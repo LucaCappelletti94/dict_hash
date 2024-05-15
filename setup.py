@@ -49,6 +49,7 @@ setup(
     version=__version__,
     description="Python package to hash dictionaries using both default hash and sha256.",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url="https://github.com/LucaCappelletti94/dict_hash",
     author="Luca Cappelletti",
     author_email="cappelletti.luca94@gmail.com",
