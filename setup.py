@@ -39,7 +39,7 @@ test_deps = [
     "polars",
     "numba",
     "tqdm",
-    "hvplot>=0.9.1"
+    "hvplot>=0.9.1",
 ]
 
 extras = {"test": test_deps}
