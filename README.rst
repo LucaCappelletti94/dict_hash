@@ -76,6 +76,26 @@ Currently, we support this parameter for NumPy and Pandas objects.
     )
 
 
+Behavior on error
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If the hashing function encounters an object that it cannot hash,
+it will by default raise a `NotHashableException` exception. You
+can choose whether this or other options happen by setting the
+`behavior_on_error` parameter. You can choose between:
+
+* `raise`: Raise a `NotHashableException` exception.
+* `warn`: Print a `NotHashableWarning` and continue hashing, setting the unhashable object to `"Unhashable object"` string.
+* `ignore`: Ignore the object and continue hashing, setting the unhashable object to `"Unhashable object"` string.
+
+
+Recursive objects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In Python it is possible to have recursive objects, such as a dictionary that contains itself.
+When you attempt to hash such an object, the hashing function will raise a `RecursionError` exception,
+which you can customize with the `maximal_recursion` parameter, by default equal to `100`. The
+`RecursionError` is most commonly then handled as a `NotHashableException`, and as such you can
+set the `behavior_on_error` parameter to handle it as you see fit.
+
 
 Hashable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
