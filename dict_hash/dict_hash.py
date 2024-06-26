@@ -122,10 +122,23 @@ def _convert(
             return int(data)
 
         # If the given object is a numpy float, we convert it to a python float.
-        if isinstance(data, (np.float64, np.float32, np.float16, np.float_)):
+        float_np_types = (np.float64, np.float32, np.float16)
+
+        try:
+            float_np_types = (*float_np_types, np.float_)
+        except AttributeError:
+            pass
+
+        if isinstance(data, float_np_types):
             return float(data)
 
-        if isinstance(data, (np.str_, np.string_)):
+        # If the given object is a numpy string, we convert it to a python string.
+        try:
+            string_np_types = (np.str_, np.bytes_)
+        except AttributeError:
+            string_np_types = (np.str_, np.string_)
+
+        if isinstance(data, string_np_types):
             return str(data)
 
     # If the given data is a simple object such as a string, an integer
