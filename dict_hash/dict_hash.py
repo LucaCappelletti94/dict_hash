@@ -188,6 +188,93 @@ def _convert(
                 behavior_on_error=behavior_on_error,
                 maximal_recursion=maximal_recursion,
             )
+        if isinstance(data, pd.Series):
+            shape = data.shape
+
+            if use_approximation:
+                if data.shape[0] > 50:
+                    data = data.sample(n=50, random_state=42)
+            
+            return _convert(
+                {
+                    "hash": _convert(
+                        data.to_dict(),
+                        current_depth=current_depth + 1,
+                        use_approximation=use_approximation,
+                        behavior_on_error=behavior_on_error,
+                        maximal_recursion=maximal_recursion,
+                    ),
+                    "name": data.name,
+                },
+                current_depth=current_depth + 1,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
+
+    ############################################
+    # Handling hashing of Polars objects       #
+    ############################################
+
+    try:
+        import polars as pl  # pylint: disable=import-outside-toplevel
+    except ModuleNotFoundError:
+        pass
+    else:
+        # A similar behaviour is required for DataFrames.
+        if isinstance(data, pl.DataFrame):
+            # We store the initial shape of the dataframe, so
+            # we can make it part of the hash even if we
+            # use the approximation and sample only a part
+            # of the dataframe.
+            shape = data.shape
+
+            if use_approximation:
+                # We take at most the first 50 columns.
+                # This is needed because we have encountered DataFrames
+                # with millions of columns. Peace to the soul that made them.
+                if data.shape[1] > 50:
+                    data = data[data.columns[:50]]
+                # We sample 50 random lines of the dataframe, as some dataframes
+                # can contain millions of samples.
+                if data.shape[0] > 50:
+                    data = data.sample(n=50, random_state=42)
+            return _convert(
+                {
+                    "hash": _convert(
+                        data.to_dict(),
+                        current_depth=current_depth + 1,
+                        use_approximation=use_approximation,
+                        behavior_on_error=behavior_on_error,
+                        maximal_recursion=maximal_recursion,
+                    ),
+                    "shape": shape,
+                },
+                current_depth=current_depth + 1,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
+        if isinstance(data, pl.Series):
+            shape = data.shape
+
+            if use_approximation:
+                if data.shape[0] > 50:
+                    data = data.sample(n=50, random_state=42)
+            
+            return _convert(
+                {
+                    "hash": _convert(
+                        np.array(data),
+                        current_depth=current_depth + 1,
+                        use_approximation=use_approximation,
+                        behavior_on_error=behavior_on_error,
+                        maximal_recursion=maximal_recursion,
+                    ),
+                    "name": data.name,
+                },
+                current_depth=current_depth + 1,
+                behavior_on_error=behavior_on_error,
+                maximal_recursion=maximal_recursion,
+            )
 
     ############################################
     # Handling hashing of Ensmallen objects    #
@@ -375,6 +462,7 @@ def _convert(
 
     message = (
         f"Object of class {data.__class__.__name__} not currently supported. "
+        f"The module of origin of the object is {data.__class__.__module__}. "
         "You can easily adding support for the object "
         "by extending the `Hashable` abstract class for "
         "your object of interest. "
