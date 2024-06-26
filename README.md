@@ -4,10 +4,9 @@
 [![Pypi total project downloads](https://pepy.tech/badge/dict-hash)](https://pepy.tech/badge/dict-hash)
 [![Github Actions](https://github.com/LucaCappelletti94/dict_hash/actions/workflows/python.yml/badge.svg)](https://github.com/LucaCappelletti94/dict_hash/actions/)
 
-Simple python tool to hash dictionaries using both default hash and sha256.
-The library comes with full support for hashing Pandas DataFrame objects,
-Numba objects and Numpy arrays, but you will need to specify the requirements
-when installing the package to avoid bloating the installation process.
+Python package to hash dictionaries using both default hash and sha256.
+It comes with full support for hashing Pandas & Polars DataFrame/Series objects,
+Numba objects and Numpy arrays.
 
 Furthermore, the library supports objects that can be recursively hashed.
 
