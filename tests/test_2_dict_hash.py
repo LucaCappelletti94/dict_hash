@@ -1,4 +1,5 @@
 """Test the dict_hash function."""
+
 import os
 import numpy as np
 from dict_hash import ALL_AVAILABLE_HASHES

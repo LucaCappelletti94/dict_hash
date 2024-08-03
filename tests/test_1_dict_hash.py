@@ -60,7 +60,9 @@ def test_dict_hash_with_approximation_1d():
     assert dict_hash(d, use_approximation=True) == dict_hash(d, use_approximation=True)
 
     for consistent_hash_function in ALL_AVAILABLE_HASHES:
-        assert consistent_hash_function(d, use_approximation=True) == consistent_hash_function(d, use_approximation=True)
+        assert consistent_hash_function(
+            d, use_approximation=True
+        ) == consistent_hash_function(d, use_approximation=True)
         Path(consistent_hash_function(d, use_approximation=True)).touch()
 
 
@@ -70,7 +72,9 @@ def test_dict_hash_with_approximation_2d():
     d["this_is_big"] = [np.full((100, 10), 6)]
     assert dict_hash(d, use_approximation=True) == dict_hash(d, use_approximation=True)
     for consistent_hash_function in ALL_AVAILABLE_HASHES:
-        assert consistent_hash_function(d, use_approximation=True) == consistent_hash_function(d, use_approximation=True)
+        assert consistent_hash_function(
+            d, use_approximation=True
+        ) == consistent_hash_function(d, use_approximation=True)
         Path(consistent_hash_function(d, use_approximation=True)).touch()
 
 
@@ -80,7 +84,9 @@ def test_dict_hash_with_approximation_3d():
     d["this_is_big"] = [np.full((100, 10, 2), 7)]
     assert dict_hash(d, use_approximation=True) == dict_hash(d, use_approximation=True)
     for consistent_hash_function in ALL_AVAILABLE_HASHES:
-        assert consistent_hash_function(d, use_approximation=True) == consistent_hash_function(d, use_approximation=True)
+        assert consistent_hash_function(
+            d, use_approximation=True
+        ) == consistent_hash_function(d, use_approximation=True)
         Path(consistent_hash_function(d, use_approximation=True)).touch()
 
 
@@ -90,7 +96,9 @@ def test_dict_hash_with_approximation_4d():
     d["this_is_big"] = [np.full((100, 10, 3, 2), 8)]
     assert dict_hash(d, use_approximation=True) == dict_hash(d, use_approximation=True)
     for consistent_hash_function in ALL_AVAILABLE_HASHES:
-        assert consistent_hash_function(d, use_approximation=True) == consistent_hash_function(d, use_approximation=True)
+        assert consistent_hash_function(
+            d, use_approximation=True
+        ) == consistent_hash_function(d, use_approximation=True)
         Path(consistent_hash_function(d, use_approximation=True)).touch()
 
 
@@ -108,5 +116,7 @@ def test_dict_hash_with_approximation_4d_with_different_shape():
     )
 
     for consistent_hash_function in ALL_AVAILABLE_HASHES:
-        assert consistent_hash_function(d, use_approximation=True) == consistent_hash_function(d, use_approximation=True)
+        assert consistent_hash_function(
+            d, use_approximation=True
+        ) == consistent_hash_function(d, use_approximation=True)
         Path(consistent_hash_function(d, use_approximation=True)).touch()

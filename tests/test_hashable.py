@@ -1,4 +1,5 @@
 """Tests for the Hashable class."""
+
 import pytest
 from time import time
 from dict_hash import Hashable, validate_consistent_hash, sha256
@@ -6,6 +7,7 @@ from dict_hash import Hashable, validate_consistent_hash, sha256
 
 class MyHashable(Hashable):
     """A class that implements the consistent_hash method."""
+
     def __init__(self, a: int):
         self._a = a
         self._time = time()
@@ -28,4 +30,3 @@ def test_hashable():
     assert not validate_consistent_hash(b, c)
 
     assert sha256({"my_hashable": a}) == sha256({"my_hashable": b})
-
