@@ -10,3 +10,4 @@ htmlcov
 build/
 dist
 .mypy_cache
+test_readme.py

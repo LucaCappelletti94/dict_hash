@@ -38,9 +38,11 @@ d = random_dict(randint(1, 10), randint(1, 10))
 my_hash = dict_hash(d)
 ```
 
-### Consistent hash with sha256
+### Consistent hashes
 
-Obtain a consistent hash from the given dictionary.
+Obtain a consistent hash from the given dictionary. Supported methods include `md5`, `sha256`, `sha1`, `sha224`, `sha384`, `sha512`, `sha3_512`, `shake_128`, `shake_256`, `sha3_384`, `sha3_256`, `sha3_224`, `blake2s`, `blake2b`, as provided from the `hashlib` library.
+
+For instance, to obtain a sha256 hash from the given dictionary:
 
 ```python
 from dict_hash import sha256
@@ -51,6 +53,17 @@ d = random_dict(randint(1, 10), randint(1, 10))
 my_hash = sha256(d)
 ```
 
+The methods `shake_128` and `shake_256` expose the length paramater to specify the length of the hash digest.
+
+```python
+from dict_hash import shake_128
+from random_dict import random_dict
+from random import randint
+
+d = random_dict(randint(1, 10), randint(1, 10))
+my_hash = shake_128(d, hash_length=16)
+```
+
 ### Approximated hash
 
 All of the methods shown offer the `use_approximation` parameter,
@@ -58,20 +71,17 @@ which allows you to switch to a more lightweight hashing procedure
 where supported, for the various supported objects. This procedure
 will randomly subsample the provided objects.
 
-Currently, we support this parameter for NumPy and Pandas objects.
+Currently, we support this parameter for NumPy, Polars, and Pandas objects.
 
 ```python
 from dict_hash import sha256
 from random_dict import random_dict
 from random import randint
 
-# Even though the DataFrame is very big...
-df = load_a_very_big_dataframe(...)
-# an approximated hash is still very fast!
-my_hash = sha256(
-    df,
-    use_approximation=True
-)
+d = random_dict(randint(1, 10), randint(1, 10))
+my_hash = sha256(d)
+
+approximated_hash = sha256(d, use_approximation=True)
 ```
 
 ### Behavior on error
