@@ -124,3 +124,7 @@ class MyHashable(Hashable):
             "a": self._a
         })
 ```
+
+
+## License
+This software is distributed under the MIT license.
