@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13.0-beta.1"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
         pandas-version: ["pandas<2.0", "pandas>=2.0"]
         numpy-version: ["numpy<2.0", "numpy>=2.0"]
         exclude:
@@ -32,10 +32,6 @@ jobs:
           - python-version: "3.12"
             pandas-version: "pandas<2.0"
           - python-version: "3.12"
-            numpy-version: "numpy<2.0"
-          - python-version: "3.13.0-beta.1"
-            pandas-version: "pandas<2.0"
-          - python-version: "3.13.0-beta.1"
             numpy-version: "numpy<2.0"
 
     steps:
