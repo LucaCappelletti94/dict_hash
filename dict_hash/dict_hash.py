@@ -5,11 +5,11 @@ import hashlib
 import inspect
 import json
 import warnings
-from typing import Callable, Dict, List, Any
+from typing import Callable, Dict, List, Any, Tuple
 import re
 from deflate_dict import deflate
 
-from .hashable import Hashable
+from dict_hash.hashable import Hashable
 
 
 class NotHashableException(Exception):
@@ -194,7 +194,7 @@ def _convert(
             if use_approximation:
                 if data.shape[0] > 50:
                     data = data.sample(n=50, random_state=42)
-            
+
             return _convert(
                 {
                     "hash": _convert(
@@ -259,7 +259,7 @@ def _convert(
             if use_approximation:
                 if data.shape[0] > 50:
                     data = data.sample(n=50, random_state=42)
-            
+
             return _convert(
                 {
                     "hash": _convert(
@@ -621,6 +621,186 @@ def dict_hash(
     )
 
 
+def _basic_hash(
+    dictionary: Dict,
+    hash_function: Callable[[bytes], Any],
+    hexdigest_args: Tuple = (),
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    return hash_function(
+        _sanitize(
+            dictionary,
+            use_approximation=use_approximation,
+            behavior_on_error=behavior_on_error,
+            maximal_recursion=maximal_recursion,
+        ).encode("utf-8")
+    ).hexdigest(*hexdigest_args)
+
+
+def md5(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return md5 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.md5,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha1(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha1 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha1,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha224(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha224 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha224,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
 def sha256(
     dictionary: Dict,
     use_approximation: bool = False,
@@ -666,11 +846,558 @@ def sha256(
     NotHashableWarning
         When an object is not hashable and `behavior_on_error` is set to "warn".
     """
-    return hashlib.sha256(
-        _sanitize(
-            dictionary,
-            use_approximation=use_approximation,
-            behavior_on_error=behavior_on_error,
-            maximal_recursion=maximal_recursion,
-        ).encode("utf-8")
-    ).hexdigest()
+    return _basic_hash(
+        dictionary,
+        hashlib.sha256,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha384(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha384 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha384,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha512(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha512 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha512,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def blake2b(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return blake2b of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.blake2b,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def blake2s(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return blake2s of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.blake2s,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha3_224(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha3_224 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha3_224,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha3_256(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha3_256 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha3_256,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha3_384(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha3_384 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha3_384,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def sha3_512(
+    dictionary: Dict,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return sha3_512 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.sha3_512,
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def shake_128(
+    dictionary: Dict,
+    hash_length: int = 32,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return shake_128 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    hash_length: int = 32
+        Length of the hash to return.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.shake_128,
+        hexdigest_args=(hash_length,),
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )
+
+
+def shake_256(
+    dictionary: Dict,
+    hash_length: int = 32,
+    use_approximation: bool = False,
+    behavior_on_error: str = "raise",
+    maximal_recursion: int = 100,
+) -> str:
+    """Return shake_256 of given dict.
+
+    Parameters
+    ------------------
+    dictionary: Dict
+        Dictionary of which determine an unique hash.
+    hash_length: int = 32
+        Length of the hash to return.
+    use_approximation: bool = False
+        Whether to employ approximations, such as sampling
+        random values in pandas dataframe (using a fixed deterministic
+        random seed) or lines in a numpy array. This is mainly
+        needed when you need to hash frequently big pandas dataframes
+        and you do not care about generating a very precise hash
+        but a decent one will do the trick.
+    behavior_on_error: str = "raise"
+        Whether to raise an error when an unhashable object is found
+        or to return a string representation of the object. The options
+        are "raise", "warn" and "ignore". If "warn" is selected, a warning
+        will be issued using the `warnings` module. If "ignore" is selected,
+        the object will be ignored and the hash will be computed without it
+        without raising any error or warning.
+    maximal_recursion: int = 100
+        Maximum recursion depth allowed.
+
+    Returns
+    ------------------
+    Deterministic hash for the given dictionary.
+
+    Raises
+    ------------------
+    NotHashableException
+        When an object is not hashable and `behavior_on_error` is set to "raise".
+    ValueError
+        When `behavior_on_error` is not a string or is not in ("raise", "warn", "ignore").
+
+    Warns
+    ------------------
+    NotHashableWarning
+        When an object is not hashable and `behavior_on_error` is set to "warn".
+    """
+    return _basic_hash(
+        dictionary,
+        hashlib.shake_256,
+        hexdigest_args=(hash_length,),
+        use_approximation=use_approximation,
+        behavior_on_error=behavior_on_error,
+        maximal_recursion=maximal_recursion,
+    )

@@ -1,5 +1,6 @@
 """Script containing function to validate consistent hash."""
-from .hashable import Hashable
+
+from dict_hash.hashable import Hashable
 
 
 def validate_consistent_hash(first: Hashable, second: Hashable) -> bool:

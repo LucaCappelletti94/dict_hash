@@ -1,17 +1,42 @@
 name: Python Package CI
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+on: [push, pull_request]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13.0-beta.1"]
+        pandas-version: ["pandas<2.0", "pandas>=2.0"]
+        numpy-version: ["numpy<2.0", "numpy>=2.0"]
+        exclude:
+          - python-version: "3.7"
+            pandas-version: "pandas>=2.0"
+          - python-version: "3.7"
+            numpy-version: "numpy>=2.0"
+          - python-version: "3.8"
+            pandas-version: "pandas>=2.0"
+          - python-version: "3.8"
+            numpy-version: "numpy>=2.0"
+          - python-version: "3.9"
+            pandas-version: "pandas<2.0"
+          - python-version: "3.10"
+            pandas-version: "pandas<2.0"
+          - python-version: "3.11"
+            pandas-version: "pandas<2.0"
+          - python-version: "3.11"
+            numpy-version: "numpy>=2.0"
+          - python-version: "3.12"
+            pandas-version: "pandas<2.0"
+          - python-version: "3.12"
+            numpy-version: "numpy<2.0"
+          - python-version: "3.13.0-beta.1"
+            pandas-version: "pandas<2.0"
+          - python-version: "3.13.0-beta.1"
+            numpy-version: "numpy<2.0"
 
     steps:
     - name: Checkout repository
@@ -20,23 +45,30 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ".[test]"
+        pip install polars numba
+        pip install black ".[test]"
 
-    - name: Run tests with Numpy 1x
+    - name: Check code is formatted
+      run: black --check .
+
+    - name: Run tests with default dependencies
+      run: pytest
+
+    - name: Run tests with Numpy
       run: |
         pip uninstall -y numpy
-        pip install numpy==1.26.4
+        pip install "${{ matrix.numpy-version }}"
         pytest
-
-    - name: Run tests with Numpy 2x
+    
+    - name: Run tests with Pandas
       run: |
-        pip uninstall -y numpy
-        pip install numpy==2.0.0
+        pip uninstall -y pandas
+        pip install "${{ matrix.pandas-version }}"
         pytest
 
     - name: Build package

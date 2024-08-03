@@ -36,8 +36,6 @@ test_deps = [
     "validate_version_code",
     "random_dict",
     "netaddr",
-    "polars",
-    "numba",
     "tqdm",
     "hvplot>=0.9.1",
 ]
