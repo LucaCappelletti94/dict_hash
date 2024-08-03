@@ -305,7 +305,6 @@ def _convert(
 
     try:
         import numpy as np  # pylint: disable=import-outside-toplevel
-        import pandas as pd  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError:
         pass
     else:
@@ -338,7 +337,7 @@ def _convert(
             return _convert(
                 {
                     "hash": _convert(
-                        pd.DataFrame(data),
+                        data.tolist(),
                         current_depth=current_depth + 1,
                         use_approximation=use_approximation,
                         behavior_on_error=behavior_on_error,
