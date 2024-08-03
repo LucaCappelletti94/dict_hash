@@ -37,8 +37,6 @@ test_deps = [
     "random_dict",
     "pytest-readme",
     "netaddr",
-    "tqdm",
-    "hvplot>=0.9.1",
 ]
 
 extras = {"test": test_deps}
