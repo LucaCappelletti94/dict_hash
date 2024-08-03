@@ -32,7 +32,7 @@ def is_built_in_attribute(obj: Any, attribute_name: str) -> bool:
         return (attribute.__class__.__module__ in ("__builtin__", "builtins")) or type(
             attribute
         ).__name__ in ("method-wrapper", "builtin_function_or_method")
-    except AttributeError:
+    except (AttributeError, ValueError):
         return True
 
 
