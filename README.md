@@ -1,12 +1,13 @@
 # Dict Hash
 
 [![Pypi project](https://badge.fury.io/py/dict-hash.svg)](https://badge.fury.io/py/dict-hash)
+[![License](https://img.shields.io/github/license/LucaCappelletti94/dict_hash)](https://github.com/LucaCappelletti94/dict_hash/blob/master/LICENSE)
 [![Pypi total project downloads](https://pepy.tech/badge/dict-hash)](https://pepy.tech/badge/dict-hash)
 [![Github Actions](https://github.com/LucaCappelletti94/dict_hash/actions/workflows/python.yml/badge.svg)](https://github.com/LucaCappelletti94/dict_hash/actions/)
 
 Python package to hash dictionaries using both default hash and sha256.
-It comes with full support for hashing Pandas & Polars DataFrame/Series objects,
-Numba objects and Numpy arrays.
+It comes with full support for hashing Pandas & Polars DataFrame/Series objects, Numba objects and Numpy arrays.
+It supports both objects from Pandas 1.x and 2.x and Numpy 1.x and 2.x.
 
 Furthermore, the library supports objects that can be recursively hashed.
 
