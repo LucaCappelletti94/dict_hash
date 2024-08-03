@@ -25,6 +25,17 @@ IGNORED_UNASHABLE_OBJECT_ATTRIBUTES = [
 ]
 
 
+def is_built_in_attribute(obj: Any, attribute_name: str) -> bool:
+    """Returns whether attribute is builtin"""
+    try:
+        attribute = getattr(obj, attribute_name)
+        return (attribute.__class__.__module__ in ("__builtin__", "builtins")) or type(
+            attribute
+        ).__name__ in ("method-wrapper", "builtin_function_or_method")
+    except AttributeError:
+        return True
+
+
 def _convert(
     data: Any,
     current_depth: int = 0,
@@ -447,10 +458,7 @@ def _convert(
                 for key in dir(data)
                 if (
                     key not in IGNORED_UNASHABLE_OBJECT_ATTRIBUTES
-                    and getattr(data, key).__class__.__module__
-                    not in ("__builtin__", "builtins")
-                    and type(getattr(data, key)).__name__
-                    not in ("method-wrapper", "builtin_function_or_method")
+                    and not is_built_in_attribute(data, key)
                 )
             },
         )

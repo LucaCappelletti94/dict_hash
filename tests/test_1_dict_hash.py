@@ -1,6 +1,8 @@
-from dict_hash import ALL_AVAILABLE_HASHES, dict_hash
+"""Test suite verifying consistency of hashes"""
+
 from pathlib import Path
 import numpy as np
+from dict_hash import ALL_AVAILABLE_HASHES, dict_hash
 from .utils import create_dict
 
 
