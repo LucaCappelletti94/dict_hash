@@ -14,6 +14,11 @@ Furthermore, the library supports objects that can be recursively hashed.
 As we saw this library being used in the wild mostly to create caching libraries and wrappers,
 we'd like to point you to our library, [Cache decorator](https://github.com/zommiommy/cache_decorator).
 
+## Why can't I just use the default hash function?
+
+In Python, dictionaries just aren't hashable. This is because they are mutable objects, and as such, they cannot be hashed.
+If you were to try and run `hash({})`, you would get a `TypeError` exception.
+
 ## How do I install this package?
 
 As usual, just download it using pip:
@@ -126,6 +131,6 @@ class MyHashable(Hashable):
         })
 ```
 
-
 ## License
+
 This software is distributed under the MIT license.
