@@ -288,18 +288,6 @@ def _convert(
             )
 
     ############################################
-    # Handling hashing of Ensmallen objects    #
-    ############################################
-
-    try:
-        from ensmallen import Graph  # pylint: disable=import-outside-toplevel
-    except ModuleNotFoundError:
-        pass
-    else:
-        if isinstance(data, Graph):
-            return data.hash()
-
-    ############################################
     # Handling hashing of numpy array objects  #
     ############################################
 
@@ -449,6 +437,18 @@ def _convert(
 
     if isinstance(data, Callable):
         return "".join(inspect.getsourcelines(data)[0])
+
+    ############################################
+    # Handling hashing of Ensmallen objects    #
+    ############################################
+
+    try:
+        from ensmallen import Graph  # pylint: disable=import-outside-toplevel
+    except ModuleNotFoundError:
+        pass
+    else:
+        if isinstance(data, Graph):
+            return data.hash()
 
     try:
         return _sanitize(
