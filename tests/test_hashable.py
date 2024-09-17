@@ -17,6 +17,7 @@ class MyHashable(Hashable):
             return sha256({"a": self._a}, use_approximation=True)
         return sha256({"a": self._a})
 
+
 class MyDeprecatedHashable(Hashable):
     """A class that implements the consistent_hash method."""
 
@@ -42,6 +43,7 @@ def test_hashable():
     assert not validate_consistent_hash(b, c)
 
     assert sha256({"my_hashable": a}) == sha256({"my_hashable": b})
+
 
 def test_deprecated_hashable():
     """Test that the deprecated Hashable gets the appropriate warning."""
