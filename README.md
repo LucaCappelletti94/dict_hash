@@ -125,7 +125,13 @@ class MyHashable(Hashable):
         self._a = a
         self._time = time()
 
-    def consistent_hash(self) -> str:
+    def consistent_hash(self, use_approximation: bool = False) -> str:
+        # The use approximation would be useful when the object is too large,
+        # while in this example it may be a bit pointless.
+        if use_approximation:
+            return sha256({
+                "a": self._a
+            }, use_approximation=True)
         return sha256({
             "a": self._a
         })

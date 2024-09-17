@@ -31,8 +31,14 @@ class Hashable:
                 })
     """
 
-    def consistent_hash(self) -> str:
+    def consistent_hash(self, use_approximation: bool = False) -> str:
         """Return consistent hash of the current object.
+
+        Parameters
+        ------------------
+        use_approximation: bool = False
+            If True, the hash can be approximated. This is useful when the
+            hash is too long and we want to use a shorter version of it.
 
         Returns
         ------------------

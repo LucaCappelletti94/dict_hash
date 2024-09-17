@@ -96,7 +96,23 @@ def _convert(
     if isinstance(data, Hashable):
         # we call its method to convert it to an hash
         # that can be further hashed as required.
-        return data.consistent_hash()
+        try:
+            return data.consistent_hash(use_approximation=use_approximation)
+        except TypeError:
+            # If this Hashable class is using the legacy interface, we call
+            # it without any arguments and raise a warning to advise the user
+            # that in a future version this will be deprecated.
+            warnings.warn(
+                (
+                    "The method consistent_hash should take an argument "
+                    "use_approximation: bool = False. This is needed to "
+                    "allow for the approximation of the hash. "
+                    "Please update the method to the new interface. "
+                    "This will be deprecated in a future version."
+                ),
+                DeprecationWarning,
+            )
+            return data.consistent_hash()
     # If we are handling an instance of fixed-length numpy strings we need to
     # convert them back to a normal python string so that they may be hashed.
     if isinstance(data, bytes):
