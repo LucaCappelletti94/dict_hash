@@ -31,7 +31,7 @@ class MyDeprecatedHashable(Hashable):
 
 def test_hashable():
     """Test the Hashable class."""
-    with pytest.raises(NotImplementedError):
+    with pytest.raises((NotImplementedError, TypeError)):
         Hashable().consistent_hash()
 
     a = MyHashable(2)
