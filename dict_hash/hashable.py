@@ -1,7 +1,9 @@
 """Submodule that contains the abstract class Hashable."""
 
+from abc import ABC, abstractmethod
 
-class Hashable:
+
+class Hashable(ABC):
     """The class Hashable has to be implemented by objects you want to hash.
 
     This abstract class requires the implementation of the method
@@ -31,6 +33,7 @@ class Hashable:
                 })
     """
 
+    @abstractmethod
     def consistent_hash(self, use_approximation: bool = False) -> str:
         """Return consistent hash of the current object.
 
