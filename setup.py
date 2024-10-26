@@ -37,7 +37,6 @@ test_deps = [
     "random_dict",
     "pytest-readme",
     "netaddr",
-    "pandas-stubs",
 ]
 
 extras = {"test": test_deps}
