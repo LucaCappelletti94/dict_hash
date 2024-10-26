@@ -151,7 +151,7 @@ def _convert(
         # If the given object is a numpy float, we convert it to a python float.
 
         try:
-            if isinstance(data, (np.float64, np.float32, np.float16, np.float_)):
+            if isinstance(data, (np.float64, np.float32, np.float16, np.float_)): # type: ignore
                 return float(data)
         except AttributeError:
             if isinstance(data, (np.float64, np.float32, np.float16)):
@@ -161,7 +161,7 @@ def _convert(
         try:
             string_np_types = (np.str_, np.bytes_)
         except AttributeError:
-            string_np_types = (np.str_, np.string_)
+            string_np_types = (np.str_, np.string_) # type: ignore
 
         if isinstance(data, string_np_types):
             return str(data)
