@@ -5,7 +5,7 @@ import hashlib
 import inspect
 import json
 import warnings
-from typing import Callable, Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Callable
 import re
 from deflate_dict import deflate
 
@@ -149,15 +149,13 @@ def _convert(
             return int(data)
 
         # If the given object is a numpy float, we convert it to a python float.
-        float_np_types = (np.float64, np.float32, np.float16)
 
         try:
-            float_np_types = (*float_np_types, np.float_)
+            if isinstance(data, (np.float64, np.float32, np.float16, np.float_)):
+                return float(data)
         except AttributeError:
-            pass
-
-        if isinstance(data, float_np_types):
-            return float(data)
+            if isinstance(data, (np.float64, np.float32, np.float16)):
+                return float(data)
 
         # If the given object is a numpy string, we convert it to a python string.
         try:
@@ -264,7 +262,7 @@ def _convert(
                 # We sample 50 random lines of the dataframe, as some dataframes
                 # can contain millions of samples.
                 if data.shape[0] > 50:
-                    data = data.sample(n=50, random_state=42)
+                    data = data.sample(n=50)
             return _convert(
                 {
                     "hash": _convert(
@@ -281,11 +279,11 @@ def _convert(
                 maximal_recursion=maximal_recursion,
             )
         if isinstance(data, pl.Series):
-            shape = data.shape
+            number_of_elements: int = data.shape[0]
 
             if use_approximation:
-                if data.shape[0] > 50:
-                    data = data.sample(n=50, random_state=42)
+                if number_of_elements > 50:
+                    data = data.sample(n=50)
 
             return _convert(
                 {
@@ -318,7 +316,7 @@ def _convert(
             # we can make it part of the hash even if we
             # use the approximation and sample only a part
             # of the array.
-            shape = data.shape
+            array_shape: Tuple[int, ...] = data.shape
 
             # We reshape the array so it is always 2D,
             # with at most 50 columns.
@@ -347,7 +345,7 @@ def _convert(
                         behavior_on_error=behavior_on_error,
                         maximal_recursion=maximal_recursion,
                     ),
-                    "shape": shape,
+                    "shape": array_shape,
                 },
                 current_depth=current_depth + 1,
                 behavior_on_error=behavior_on_error,
@@ -451,7 +449,7 @@ def _convert(
     if isinstance(data, re.Pattern):
         return data.pattern
 
-    if isinstance(data, Callable):
+    if callable(data):
         return "".join(inspect.getsourcelines(data)[0])
 
     ############################################
@@ -459,7 +457,7 @@ def _convert(
     ############################################
 
     try:
-        from ensmallen import Graph  # pylint: disable=import-outside-toplevel
+        from ensmallen import Graph  # type: ignore
     except ModuleNotFoundError:
         pass
     else:
@@ -594,7 +592,7 @@ def dict_hash(
     use_approximation: bool = False,
     behavior_on_error: str = "raise",
     maximal_recursion: int = 100,
-) -> str:
+) -> int:
     """Return hash of given dict (may not be equal for every session).
 
     Parameters
