@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install ".[test]"
-          pip install pandas pandas-stubs
+          pip install pandas pandas-stubs numpy polars numba
           pip install mypy  # Ensure mypy is installed
 
       - name: Run MyPy
