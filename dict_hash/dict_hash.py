@@ -123,6 +123,10 @@ def _convert(
         # following the ISO format of the date.
         return data.isoformat()
 
+    # converts timedelta to a float
+    if isinstance(data, datetime.timedelta):
+        return data.total_seconds()
+
     ############################################
     # Handling hashing of numpy string objects #
     ############################################
