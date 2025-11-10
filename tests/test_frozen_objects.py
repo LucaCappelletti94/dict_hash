@@ -17,4 +17,6 @@ def test_frozenset_hash():
     hash2 = dict_hash(second_dict)
     hash3 = dict_hash(third_dict)
     assert hash1 == hash2, "Hashes of identical frozensets should match."
-    assert hash1 != hash3, f"Hashes of different frozensets ({first_dict}, {third_dict}) should not match."
+    assert (
+        hash1 != hash3
+    ), f"Hashes of different frozensets ({first_dict}, {third_dict}) should not match."
