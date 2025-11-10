@@ -436,7 +436,7 @@ def _convert(
             for e in data
         )
 
-    if isinstance(data, set):
+    if isinstance(data, (set, frozenset)):
         return sorted(
             [
                 _convert(
