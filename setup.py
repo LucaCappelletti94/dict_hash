@@ -60,8 +60,6 @@ setup(
     ],
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     tests_require=test_deps,
-    install_requires=[
-        "deflate_dict>=1.0.8",
-    ],
+    install_requires=["deflate_dict>=1.2.2"],
     extras_require=extras,
 )

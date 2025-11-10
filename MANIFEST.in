@@ -1,1 +1,2 @@
 include LICENSE
+include dict_hash/py.typed

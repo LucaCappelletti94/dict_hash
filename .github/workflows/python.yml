@@ -47,7 +47,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel
-        pip install polars numba
+        pip install polars numba pandas pandas-stubs
         pip install black ".[test]"
 
     - name: Check code is formatted

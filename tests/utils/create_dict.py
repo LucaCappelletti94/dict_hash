@@ -2,7 +2,7 @@
 
 from typing import Dict, Any
 import random
-from datetime import date
+import datetime
 import re
 
 from random_dict import random_dict
@@ -48,7 +48,8 @@ def create_dict(seed=0) -> Dict[Any, Any]:
     except ImportError:
         pass
 
-    d["date"] = date(1994, 12, 12)
+    d["date"] = datetime.date(1994, 12, 12)
+    d["timedelta"] = datetime.timedelta(days=7)
     d["set"] = {1, 2, 4}
     d["none"] = None
     return d
